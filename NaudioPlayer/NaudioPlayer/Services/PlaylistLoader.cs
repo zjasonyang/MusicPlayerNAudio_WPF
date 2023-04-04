@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using MyLibrary.StringOperations.ExtensionMethods;
 using NaudioPlayer.Models;
+using NaudioPlayer.Extensions;
 
 namespace NaudioPlayer.Services
 {

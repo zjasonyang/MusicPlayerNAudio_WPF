@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -8,12 +9,12 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using MyLibrary.CustomCollections.ExtensionMethods;
-using MyLibrary.StringOperations.ExtensionMethods;
 using NaudioPlayer.Annotations;
 using NaudioPlayer.Models;
 using NaudioPlayer.Services;
 using NaudioWrapper;
+using NaudioPlayer.Extensions;
+
 
 namespace NaudioPlayer.ViewModels
 {
@@ -125,6 +126,7 @@ namespace NaudioPlayer.ViewModels
                 OnPropertyChanged(nameof(Playlist));
             }
         }
+
 
         public ICommand ExitApplicationCommand { get; set; }
         public ICommand AddFileToPlaylistCommand { get; set; }
@@ -289,7 +291,7 @@ namespace NaudioPlayer.ViewModels
                                           .Where(f=>f.EndsWith(".wav") || f.EndsWith(".mp3") || f.EndsWith(".wma") || f.EndsWith(".ogg") || f.EndsWith(".flac"));
                 foreach (var audioFile in audioFiles)
                 {
-                    var removePath = audioFile.RemovePath();
+                    var removePath = Path.GetFileName(audioFile);
                     var friendlyName = removePath.Remove(removePath.Length - 4);
                     var track = new Track(audioFile, friendlyName);
                     Playlist.Add(track);
@@ -331,8 +333,14 @@ namespace NaudioPlayer.ViewModels
             ofd.Filter = "PLAYLIST files (*.playlist) | *.playlist";
             if (ofd.ShowDialog() == true)
             {
-                Playlist = new PlaylistLoader().Load(ofd.FileName).ToObservableCollection();
+                //Playlist = new PlaylistLoader().Load(ofd.FileName).ToObservableCollection();
+                Playlist = ToObservableCollection(new PlaylistLoader().Load(ofd.FileName));
             }
+        }
+
+        private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
+        {
+            return new ObservableCollection<T>(collection);
         }
 
         private bool CanLoadPlaylist(object p)
