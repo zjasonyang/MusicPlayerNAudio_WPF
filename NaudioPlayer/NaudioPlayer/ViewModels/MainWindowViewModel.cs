@@ -14,7 +14,9 @@ using NaudioPlayer.Models;
 using NaudioPlayer.Services;
 using NaudioWrapper;
 using NaudioPlayer.Extensions;
-
+using System.Timers;
+using System.Windows.Threading;
+using System;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -31,7 +33,8 @@ namespace NaudioPlayer.ViewModels
         private Track _currentlyPlayingTrack;
         private Track _currentlySelectedTrack;
         private AudioPlayer _audioPlayer;
-        
+        private System.Timers.Timer _timer;
+
         private string _title;
         private double _currentTrackLenght;
         private double _currentTrackPosition;
@@ -80,8 +83,16 @@ namespace NaudioPlayer.ViewModels
                 if (value.Equals(_currentTrackLenght)) return;
                 _currentTrackLenght = value;
                 OnPropertyChanged(nameof(CurrentTrackLenght));
+                OnPropertyChanged(nameof(CurrentTrackLenghtString)); // Add this line
             }
         }
+
+        public string CurrentTrackLenghtString
+        {
+            get => TimeSpan.FromSeconds(CurrentTrackLenght).ToString(@"mm\:ss");
+        }
+
+
 
         public double CurrentTrackPosition
         {
@@ -91,7 +102,13 @@ namespace NaudioPlayer.ViewModels
                 if (value.Equals(_currentTrackPosition)) return;
                 _currentTrackPosition = value;
                 OnPropertyChanged(nameof(CurrentTrackPosition));
+                OnPropertyChanged(nameof(CurrentTrackPositionString)); // Add this line
             }
+        }
+
+        public string CurrentTrackPositionString
+        {
+            get => TimeSpan.FromSeconds(CurrentTrackPosition).ToString(@"mm\:ss");
         }
 
         public Track CurrentlySelectedTrack
@@ -161,10 +178,15 @@ namespace NaudioPlayer.ViewModels
             PlayPauseImageSource = "../Images/play.png";
             CurrentVolume = 1;
 
-            var timer = new System.Timers.Timer();
-            timer.Interval = 300;
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            //var timer = new System.Timers.Timer();
+            //timer.Interval = 300;
+            //timer.Elapsed += Timer_Elapsed;
+            //timer.Start();
+
+            _timer = new System.Timers.Timer(1000); // 1000 milliseconds or 1 second interval
+            _timer.Elapsed += Timer_Elapsed;
+            _timer.AutoReset = true;
+
         }
 
         private void UpdateSeekBar()
@@ -177,8 +199,26 @@ namespace NaudioPlayer.ViewModels
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            UpdateSeekBar();
+            if (_audioPlayer != null)
+            {
+                double newPosition = _audioPlayer.GetPositionInSeconds();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CurrentTrackPosition = newPosition;
+                    Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
+                });
+            }
         }
+
+        //private void Timer_Tick(object sender, EventArgs e)
+        //{
+        //    if (_audioPlayer != null)
+        //    {
+        //        CurrentTrackPosition = _audioPlayer.GetPositionInSeconds();
+        //        Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
+        //    }
+        //}
+
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
@@ -187,6 +227,8 @@ namespace NaudioPlayer.ViewModels
                 _audioPlayer.Dispose();
             }
         }
+
+        
 
         private void _audioPlayer_PlaybackStopped()
         {
@@ -400,8 +442,10 @@ namespace NaudioPlayer.ViewModels
                     CurrentlyPlayingTrack = CurrentlySelectedTrack;
                 }
                 _audioPlayer.TogglePlayPause(CurrentVolume);
+                _timer.Start(); // Start updating the position
             }
         }
+
         //private void StartPlayback(object p)
         //{
         //    if (CurrentlySelectedTrack != null)
@@ -422,6 +466,7 @@ namespace NaudioPlayer.ViewModels
         //        }
         //    }
         //}
+
         private bool CanStartPlayback(object p)
         {
             if (CurrentlySelectedTrack != null)
@@ -437,6 +482,7 @@ namespace NaudioPlayer.ViewModels
             {
                 _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedByUser;
                 _audioPlayer.Stop();
+                _timer.Stop(); // Stop updating the position
             }
         }
         private bool CanStopPlayback(object p)
