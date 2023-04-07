@@ -30,6 +30,7 @@ namespace NaudioPlayer.ViewModels
         private PlaybackState _playbackState;
 
         private ObservableCollection<Track> _playlist;
+
         private Track _currentlyPlayingTrack;
         private Track _currentlySelectedTrack;
         private AudioPlayer _audioPlayer;
@@ -40,6 +41,7 @@ namespace NaudioPlayer.ViewModels
         private double _currentTrackPosition;
         private string _playPauseImageSource;
         private float _currentVolume;
+
 
         public string Title
         {

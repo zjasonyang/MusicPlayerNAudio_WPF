@@ -15,6 +15,9 @@ namespace NaudioPlayer.Models
         private string _friendlyName;
         private string _filepath;
 
+        private int _number;
+        private TimeSpan _time;
+
         public string FriendlyName
         {
             get { return _friendlyName; }
@@ -36,7 +39,29 @@ namespace NaudioPlayer.Models
                 OnPropertyChanged(nameof(Filepath));
             }
         }
-        
+
+        public int Number
+        {
+            get { return _number; }
+            set
+            {
+                if (value == _number) return;
+                _number = value;
+                OnPropertyChanged(nameof(Number));
+            }
+        }
+
+        public TimeSpan Time
+        {
+            get { return _time; }
+            set
+            {
+                if (value == _time) return;
+                _time = value;
+                OnPropertyChanged(nameof(Time));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Track(string filepath, string friendlyName)
