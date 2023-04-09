@@ -91,6 +91,7 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
+       
         public string CurrentTrackLenghtString
         {
             get => TimeSpan.FromSeconds(CurrentTrackLenght).ToString(@"mm\:ss");
@@ -216,14 +217,14 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
-        //private void Timer_Tick(object sender, EventArgs e)
-        //{
-        //    if (_audioPlayer != null)
-        //    {
-        //        CurrentTrackPosition = _audioPlayer.GetPositionInSeconds();
-        //        Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
-        //    }
-        //}
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (_audioPlayer != null)
+            {
+                CurrentTrackPosition = _audioPlayer.GetPositionInSeconds();
+                Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
+            }
+        }
 
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)

@@ -126,6 +126,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -142,7 +143,17 @@
                         </ListBox>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 10">
+                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 0 10 10">
+                        <Slider x:Name="trackSlider" Value="{Binding CurrentTrackPosition, Mode=OneWay}" Maximum="{Binding CurrentTrackLenght}" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Label Content="{Binding CurrentTrackPositionString}" />
+                        <Label Content="/" />
+                        <Label Content="{Binding CurrentTrackLenghtString}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 10">
                         <Button Width="30" Height="30" Margin="5" Command="{Binding RewindToStartCommand}">
                             <Icon:PackIconMaterial Kind="SkipPrevious" />
                         </Button>

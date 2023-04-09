@@ -24,17 +24,17 @@
         </Border.Style>
 
         <Grid Background="Transparent">
-            <Grid.RowDefinitions>
+            <!--<Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            </Grid.RowDefinitions>-->
 
             <!--<TextBlock Text="{Binding Number}" Foreground="white" FontSize="16" FontWeight="SemiBold" Margin="0 0 10 0"/>-->
-            <TextBlock Text="{Binding Time, Converter={StaticResource TimeSpanToTimeStringConverter}}" 
+            <!--<TextBlock Text="{Binding Time, Converter={StaticResource TimeSpanToTimeStringConverter}}" 
                             Grid.Row="0" Foreground="#c2e8dc" FontSize="18" FontWeight="SemiBold"
-                            Margin="0 0 0 2" HorizontalAlignment="Right"/>
-            <TextBlock Text="{Binding FriendlyName}" Grid.Row="1" Foreground="white" FontSize="22" FontWeight="SemiBold" 
-                            Margin="0 0 0 2"/>
+                            Margin="0 0 0 2" HorizontalAlignment="Right"/>-->
+            <TextBlock Text="{Binding FriendlyName}" Foreground="white" FontSize="22" FontWeight="SemiBold" 
+                            Margin="0 0 10 0"/>
         </Grid>
     </Border>
 </UserControl>
