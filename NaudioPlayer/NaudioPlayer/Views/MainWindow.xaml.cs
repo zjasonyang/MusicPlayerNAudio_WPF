@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace NaudioPlayer
 {
@@ -11,5 +12,7 @@ namespace NaudioPlayer
         {
             InitializeComponent();
         }
+
+        
     }
 }

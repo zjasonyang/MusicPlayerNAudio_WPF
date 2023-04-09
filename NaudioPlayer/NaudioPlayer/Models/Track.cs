@@ -64,10 +64,12 @@ namespace NaudioPlayer.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Track(string filepath, string friendlyName)
+        public Track(string filepath, string friendlyName, int number, TimeSpan time)
         {
             Filepath = filepath;
             FriendlyName = friendlyName;
+            Number = number;
+            Time = time;
         }
 
         [NotifyPropertyChangedInvocator]

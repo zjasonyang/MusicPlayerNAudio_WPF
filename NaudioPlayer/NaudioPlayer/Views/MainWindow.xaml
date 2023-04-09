@@ -16,22 +16,25 @@
     <Window.DataContext>
         <viewModels:MainWindowViewModel/>
     </Window.DataContext>
+    
     <Border Background="White" CornerRadius="40">
+        <!--global layout-->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="220"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-
+            
+            <!--bottom secton-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
             
-            <!-- menu -->
+            <!--left side menu-->
             <Border Background="White" CornerRadius="40 0 0 40" Grid.RowSpan="2">
                 <StackPanel Margin="0 30 0 0">
+                    <!--contorl bar-->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="63 10 0 10">
                         <Ellipse Fill="#ff6258" Width="15" Height="15"/>
                         <Ellipse Fill="#ffbf2f" Width="10" Height="10" Margin="7 0"/>
@@ -39,28 +42,32 @@
                     </StackPanel>
 
                     <TextBlock Text="LIBRARY" Style="{StaticResource menuTitle}"/>
+                    <!-- menu -->
+                    <StackPanel>
+                        <RadioButton x:Name="AddFilesRadioButton" Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="Add files" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=AddFilesRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="Add file" Command="{Binding AddFileToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            <MenuItem Header="Add folder" Command="{Binding AddFolderToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                        </StackPanel>
 
-                    <Button Style="{StaticResource menuButton}" Background="#02be68" Foreground="#ffffff">
-                        <!--<Button.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add a files"/>
-                                <MenuItem Header="Add a folder"/>
-                            </ContextMenu>
-                        </Button.ContextMenu>-->
-                        <Grid>
-                            <TextBlock Text="Add files" Margin="0 0 0 2"/>
-                            <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}" Visibility="Visible"/>
-                        </Grid>
-                    </Button>
-                    <Button Style="{StaticResource menuButton}">
-                        <Grid>
-                            <TextBlock Text="Playlist" Margin="0 0 0 2"/>
-                            <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
-                        </Grid>
-                    </Button>
+                        <RadioButton x:Name="PlaylistRadioButton" Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="Playlist" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=PlaylistRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="Save playlist" Command="{Binding SavePlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            <MenuItem Header="Load playlist" Command="{Binding LoadPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </Border>
-            
             <!-- music section -->
             <StackPanel Grid.Column="1" Background="White" Margin="40 60 10 0">
                 <TextBlock Text="Home" Style="{StaticResource titleText}"/>
@@ -68,38 +75,92 @@
                 <Border CornerRadius="20" Margin="0 20 0 0">
                     <Border.Background>
                         <LinearGradientBrush>
-                            <GradientStop Color="#30ad9a" Offset="0"/>
-                            <GradientStop Color="#18c274" Offset="1"/>
+                            <GradientStop Color="{StaticResource bgcolor3}" Offset="0"/>
+                            <GradientStop Color="{StaticResource bgcolor4}" Offset="1"/>
                         </LinearGradientBrush>
                     </Border.Background>
-                    
+
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="#1fae7e"/>
                     </Border.Effect>
 
-                    <!--<Grid>
-                        <Border Opacity="0.07" CornerRadius="20">
-                            <Border.Background>
-                                <ImageBrush ImageSource=""
-                            </Border.Background>
-                        </Border>
-                    </Grid>-->
-                    
                     <!-- music list -->
                     <StackPanel Margin="30">
-                        <TextBlock Text="title" Foreground="white" FontSize="26" FontWeight="Bold"/>
-                        <TextBlock Text="song a" Foreground="#c0e6de" FontSize="18" FontWeight="SemiBold" Margin="0 10 0 20"/>
-
-                        <uc:SongItem Number="" Title="" Time=":"/>
+                        <TextBlock Text="Playing" Foreground="white" FontSize="26" FontWeight="Bold"/>
+                        <ListBox ItemsSource="{Binding Playlist}" 
+                                 SelectedItem="{Binding CurrentlySelectedTrack}"
+                                 Background="Transparent" 
+                                 BorderBrush="Transparent">
+                            <ListBox.Resources>
+                                <Style TargetType="ListBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBox">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+                                                        <ItemsPresenter />
+                                                    </ScrollViewer>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <uc:SongItem />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </StackPanel>
+
                 </Border>
-                
-                
+
+
             </StackPanel>
             
+            <!--player section-->
+            <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource color3}" CornerRadius="40 0 40 0" Margin="40 0 0 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="20 0 30 0" HorizontalAlignment="Stretch">
+                        <ListBox ItemsSource="{Binding Playlist}" Background="Transparent" HorizontalAlignment="Stretch" BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <uc:Player />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 10">
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding RewindToStartCommand}">
+                            <Icon:PackIconMaterial Kind="SkipPrevious" />
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding StartPlaybackCommand}">
+                            <Icon:PackIconMaterial Kind="PlayPause" />
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding ForwardToEndCommand}">
+                            <Icon:PackIconMaterial Kind="SkipNext" />
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding StopPlaybackCommand}">
+                            <Icon:PackIconMaterial Kind="Stop" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            
         </Grid>
-        
-        
     </Border> 
     
     

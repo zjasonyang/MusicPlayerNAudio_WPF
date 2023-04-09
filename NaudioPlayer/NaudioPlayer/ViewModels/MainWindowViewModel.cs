@@ -17,6 +17,7 @@ using NaudioPlayer.Extensions;
 using System.Timers;
 using System.Windows.Threading;
 using System;
+using NAudio.Wave;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -30,6 +31,7 @@ namespace NaudioPlayer.ViewModels
         private PlaybackState _playbackState;
 
         private ObservableCollection<Track> _playlist;
+        
 
         private Track _currentlyPlayingTrack;
         private Track _currentlySelectedTrack;
@@ -147,6 +149,8 @@ namespace NaudioPlayer.ViewModels
         }
 
 
+
+
         public ICommand ExitApplicationCommand { get; set; }
         public ICommand AddFileToPlaylistCommand { get; set; }
         public ICommand AddFolderToPlaylistCommand { get; set; }
@@ -178,7 +182,7 @@ namespace NaudioPlayer.ViewModels
             _playbackState = PlaybackState.Stopped;
 
             PlayPauseImageSource = "../Images/play.png";
-            CurrentVolume = 1;
+            CurrentVolume = 0.5F;
 
             //var timer = new System.Timers.Timer();
             //timer.Interval = 300;
@@ -310,8 +314,17 @@ namespace NaudioPlayer.ViewModels
             if (result == true)
             {
                 var friendlyName = ofd.SafeFileName.Remove(ofd.SafeFileName.Length - 4);
-                var track = new Track(ofd.FileName, friendlyName);
-                Playlist.Add(track);
+                var filepath = ofd.FileName;
+                //var track = new Track(ofd.FileName, friendlyName);
+                
+                
+                // Read the duration using NAudio
+                using (var reader = new AudioFileReader(filepath))
+                {
+                    var duration = reader.TotalTime;
+                    var track = new Track(filepath, friendlyName, Playlist.Count + 1, duration);
+                    Playlist.Add(track);
+                } 
             }
         }
         private bool CanAddFileToPlaylist(object p)
@@ -333,12 +346,19 @@ namespace NaudioPlayer.ViewModels
                 var folderName = cofd.FileName;
                 var audioFiles = Directory.EnumerateFiles(folderName, "*.*", SearchOption.AllDirectories)
                                           .Where(f=>f.EndsWith(".wav") || f.EndsWith(".mp3") || f.EndsWith(".wma") || f.EndsWith(".ogg") || f.EndsWith(".flac"));
+                int trackNumber = Playlist.Count + 1;
                 foreach (var audioFile in audioFiles)
                 {
                     var removePath = Path.GetFileName(audioFile);
                     var friendlyName = removePath.Remove(removePath.Length - 4);
-                    var track = new Track(audioFile, friendlyName);
-                    Playlist.Add(track);
+                    //var track = new Track(audioFile, friendlyName);
+                    using (var reader = new AudioFileReader(audioFile))
+                    {
+                        var duration = reader.TotalTime;
+                        var track = new Track(audioFile, friendlyName, trackNumber, duration);
+                        Playlist.Add(track);
+                        trackNumber++;
+                    }
                 }
                 Playlist = new ObservableCollection<Track>(Playlist.OrderBy(z => z.FriendlyName).ToList());
             }
