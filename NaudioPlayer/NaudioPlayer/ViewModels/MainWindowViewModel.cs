@@ -153,6 +153,7 @@ namespace NaudioPlayer.ViewModels
 
 
         public ICommand ExitApplicationCommand { get; set; }
+        public ICommand MinimizeWindowCommand { get; private set; }
         public ICommand AddFileToPlaylistCommand { get; set; }
         public ICommand AddFolderToPlaylistCommand { get; set; }
         public ICommand SavePlaylistCommand { get; set; }
@@ -221,6 +222,7 @@ namespace NaudioPlayer.ViewModels
         {
             if (_audioPlayer != null)
             {
+                UpdateSeekBar();
                 CurrentTrackPosition = _audioPlayer.GetPositionInSeconds();
                 Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
             }
@@ -274,6 +276,7 @@ namespace NaudioPlayer.ViewModels
         {
             // Menu commands
             ExitApplicationCommand = new RelayCommand(ExitApplication,CanExitApplication);
+            MinimizeWindowCommand = new RelayCommand(MinimizeWindow,CanMinimizeWindow);
             AddFileToPlaylistCommand = new RelayCommand(AddFileToPlaylist, CanAddFileToPlaylist);
             AddFolderToPlaylistCommand = new RelayCommand(AddFolderToPlaylist, CanAddFolderToPlaylist);
             SavePlaylistCommand = new RelayCommand(SavePlaylist, CanSavePlaylist);
@@ -303,6 +306,15 @@ namespace NaudioPlayer.ViewModels
             Application.Current.Shutdown();
         }
         private bool CanExitApplication(object p)
+        {
+            return true;
+        }
+
+        private void MinimizeWindow(object obj)
+        {
+            Application.Current.MainWindow.WindowState = WindowState.Minimized;
+        }
+        private bool CanMinimizeWindow(object p)
         {
             return true;
         }
