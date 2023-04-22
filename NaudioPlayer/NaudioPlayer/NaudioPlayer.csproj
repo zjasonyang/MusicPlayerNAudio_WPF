@@ -105,7 +105,8 @@
     </Compile>
     <Compile Include="Converters\TimeSpanToTimeStringConverter.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
-    <Compile Include="Models\WeekSchedule.cs" />
+    <Compile Include="Models\ObservableObject.cs" />
+    <Compile Include="Models\WeeklySchedule.cs" />
     <Compile Include="ViewModels\WeeklyScheduleWindowViewModel.cs" />
     <Compile Include="Views\WeeklyScheduleWindow.xaml.cs">
       <DependentUpon>WeeklyScheduleWindow.xaml</DependentUpon>

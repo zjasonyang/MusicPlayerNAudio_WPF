@@ -1,66 +1,96 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NaudioPlayer;
 using NaudioPlayer.Models;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
-namespace NaudioPlayer.ViewModels
+public class WeeklyScheduleWindowViewModel : ObservableObject
 {
-    public class WeeklyScheduleWindowViewModel : INotifyPropertyChanged
+    private ObservableCollection<WeeklySchedule> _weeklySchedules;
+    private WeeklySchedule _selectedWeeklySchedule;
+
+    public ObservableCollection<WeeklySchedule> WeeklySchedules
     {
-        private WeeklySchedule _selectedSchedule;
-
-        public ObservableCollection<WeeklySchedule> WeeklySchedules { get; set; }
-        public WeeklySchedule SelectedSchedule
+        get { return _weeklySchedules; }
+        set
         {
-            get { return _selectedSchedule; }
-            set
-            {
-                _selectedSchedule = value;
-                OnPropertyChanged(nameof(SelectedSchedule));
-            }
+            _weeklySchedules = value;
+            OnPropertyChanged();
         }
-
-        public WeeklyScheduleWindowViewModel()
-        {
-            TimeOfDayOptions = new ObservableCollection<string>
-            {
-                "Morning",
-                "Afternoon",
-                "Night"
-            };
-
-            WeeklySchedules = new ObservableCollection<WeeklySchedule>
-            {
-                new WeeklySchedule { DayOfWeek = "一", TimeOfDay = "上午" },
-                new WeeklySchedule { DayOfWeek = "一", TimeOfDay = "下午" },
-                new WeeklySchedule { DayOfWeek = "一", TimeOfDay = "晚上" },
-                new WeeklySchedule { DayOfWeek = "二", TimeOfDay = "上午" },
-                new WeeklySchedule { DayOfWeek = "三", TimeOfDay = "Night" },
-                new WeeklySchedule { DayOfWeek = "四", TimeOfDay = "Night" },
-                new WeeklySchedule { DayOfWeek = "五", TimeOfDay = "Night" },
-                new WeeklySchedule { DayOfWeek = "六", TimeOfDay = "Night" },
-                new WeeklySchedule { DayOfWeek = "日", TimeOfDay = "Night" },
-                // ... (repeat for each day of the week)
-            };
-        }
-
-        public ObservableCollection<string> TimeOfDayOptions { get; set; }
-        // INotifyPropertyChanged implementation
-        // ...
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-
     }
 
+    public WeeklySchedule SelectedWeeklySchedule
+    {
+        get { return _selectedWeeklySchedule; }
+        set
+        {
+            _selectedWeeklySchedule = value;
+            OnPropertyChanged();
+        }
+    }
 
+    public ICommand AddScheduleCommand { get; set; }
+    public ICommand SaveScheduleCommand { get; set; }
+    public ICommand DeleteScheduleCommand { get; set; }
+
+    public WeeklyScheduleWindowViewModel()
+    {
+        LoadCommands();
+        // Initialize the WeeklySchedules collection with some sample data
+        WeeklySchedules = new ObservableCollection<WeeklySchedule>
+        {
+            // Add your sample WeeklySchedule objects here
+            new WeeklySchedule
+            {
+                Name = "Sample schedule 1",
+                PlaylistPath = "Sample playlist path 1",
+                StartTime = "Sample start time 1",
+                EndTime = "Sample end time 1",
+                DaysOfWeek = "Sample days of week 1"
+            }
+        };
+    }
+
+    private void LoadCommands()
+    {
+        AddScheduleCommand = new RelayCommand(AddSchedule);
+        SaveScheduleCommand = new RelayCommand(SaveSchedule);
+        DeleteScheduleCommand = new RelayCommand(DeleteSchedule);
+    }
+
+    private void AddSchedule(object p)
+    {
+        // Logic to add a new schedule
+    }
+
+    private void SaveSchedule(object p)
+    {
+        // Check if we have a SelectedWeeklySchedule
+        if (SelectedWeeklySchedule == null)
+        {
+            // If not, create a new schedule and add it to the list
+            var newSchedule = new WeeklySchedule
+            {
+                // Set the properties of the new schedule
+            };
+            WeeklySchedules.Add(newSchedule);
+        }
+        else
+        {
+            // If we have a SelectedWeeklySchedule, update its properties
+            SelectedWeeklySchedule.Name = "Updated name";
+            SelectedWeeklySchedule.PlaylistPath = "Updated playlist path";
+            SelectedWeeklySchedule.StartTime = "Updated start time";
+            SelectedWeeklySchedule.EndTime = "Updated end time";
+            SelectedWeeklySchedule.DaysOfWeek = "Updated days of week";
+        }
+    }
+
+    private void DeleteSchedule(object p)
+    {
+        // Logic to delete the selected schedule
+        if (SelectedWeeklySchedule != null)
+        {
+            WeeklySchedules.Remove(SelectedWeeklySchedule);
+        }
+    }
 }

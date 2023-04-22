@@ -33,7 +33,6 @@ namespace NaudioPlayer.ViewModels
         private PlaybackState _playbackState;
 
         private ObservableCollection<Track> _playlist;
-        
 
         private Track _currentlyPlayingTrack;
         private Track _currentlySelectedTrack;
@@ -46,7 +45,6 @@ namespace NaudioPlayer.ViewModels
         private string _playPauseImageSource;
         private float _currentVolume=0.5f;
         private float _previousVolume;
-
 
         public string Title
         {
@@ -86,7 +84,6 @@ namespace NaudioPlayer.ViewModels
 
             }
         }
-
         
         public double CurrentTrackLenght
         {
@@ -99,14 +96,11 @@ namespace NaudioPlayer.ViewModels
                 OnPropertyChanged(nameof(CurrentTrackLenghtString)); // Add this line
             }
         }
-
        
         public string CurrentTrackLenghtString
         {
             get => TimeSpan.FromSeconds(CurrentTrackLenght).ToString(@"mm\:ss");
         }
-
-
 
         public double CurrentTrackPosition
         {
@@ -158,6 +152,11 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
+        public ObservableCollection<WeeklySchedule> WeeklySchedules { get; set; }
+
+        public WeeklySchedule SelectedWeeklySchedule { get; set; }
+
+      
 
 
 
@@ -181,6 +180,13 @@ namespace NaudioPlayer.ViewModels
 
         public ICommand OpenWeeklyScheduleCommand { get; private set; }
 
+        public ICommand AddScheduleCommand { get; set; }
+        public ICommand EditScheduleCommand { get; set; }
+        public ICommand DeleteScheduleCommand { get; set; }
+        
+
+
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
@@ -193,6 +199,9 @@ namespace NaudioPlayer.ViewModels
 
             Playlist = new ObservableCollection<Track>();
             LoadDefaultPlaylist();
+
+            WeeklySchedules = new ObservableCollection<WeeklySchedule>();
+
 
 
             _playbackState = PlaybackState.Stopped;
@@ -314,6 +323,9 @@ namespace NaudioPlayer.ViewModels
 
             // Schedule commands
             OpenWeeklyScheduleCommand = new RelayCommand(OpenWeeklySchedule, CanOpenWeeklySchedule);
+            //AddScheduleCommand = new RelayCommand(AddSchedule);
+            //EditScheduleCommand = new RelayCommand(WeeklySchedule => EditSchedule(WeeklySchedule), WeeklySchedule => WeeklySchedule != null);
+            //DeleteScheduleCommand = new RelayCommand<WeeklySchedule>(DeleteSchedule);
         }
 
         // Menu commands
@@ -459,14 +471,49 @@ namespace NaudioPlayer.ViewModels
             LoadPlaylist(defaultPlaylistPath);
         }
 
-        private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
-        {
-            return new ObservableCollection<T>(collection);
-        }
-
         private bool CanLoadPlaylist(object p)
         {
             return true;
+        }
+
+
+        // Schedule command
+        private WeeklySchedule GetCurrentScheduledPlaylist()
+        {
+            DateTime now = DateTime.Now;
+            DayOfWeek today = now.DayOfWeek;
+            TimeSpan currentTime = now.TimeOfDay;
+
+            foreach (var schedule in WeeklySchedules)
+            {
+                if (schedule.DaysOfWeek.Contains(today) && currentTime >= schedule.StartTime && currentTime <= schedule.EndTime)
+                {
+                    return schedule;
+                }
+            }
+
+            return null;
+        }
+
+        private void OpenWeeklySchedule(object obj)
+        {
+            var weeklyScheduleWindow = new WeeklyScheduleWindow();
+            weeklyScheduleWindow.DataContext = new WeeklyScheduleWindowViewModel();
+            weeklyScheduleWindow.ShowDialog();
+        }
+        private bool CanOpenWeeklySchedule(object obj)
+        {
+            return true;
+        }
+
+        
+
+
+
+
+        private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
+        {
+            return new ObservableCollection<T>(collection);
         }
 
         // Player commands
@@ -485,6 +532,12 @@ namespace NaudioPlayer.ViewModels
 
         private void StartPlayback(object p)
         {
+            WeeklySchedule scheduledPlaylist = GetCurrentScheduledPlaylist();
+            if (scheduledPlaylist != null)
+            {
+                LoadPlaylist(scheduledPlaylist.PlaylistPath);
+            }
+
             if (CurrentlySelectedTrack != null)
             {
                 // If we are selecting a new clip, stop the current one and create a new AudioPlayer to play the new clip
@@ -516,9 +569,6 @@ namespace NaudioPlayer.ViewModels
                 _timer.Start(); // Start updating the position
             }
         }
-
-
-
 
         //private void StartPlayback(object p)
         //{
@@ -559,7 +609,6 @@ namespace NaudioPlayer.ViewModels
                 _timer.Stop(); // Stop updating the position
             }
         }
-
         private bool CanStopPlayback(object p)
         {
             if (_playbackState == PlaybackState.Playing || _playbackState == PlaybackState.Paused)
@@ -607,7 +656,6 @@ namespace NaudioPlayer.ViewModels
                 _audioPlayer.Pause();
             }
         }
-
         private void TrackControlMouseUp(object p)
         {
             if (_audioPlayer != null)
@@ -616,7 +664,6 @@ namespace NaudioPlayer.ViewModels
                 _audioPlayer.Play(NAudio.Wave.PlaybackState.Paused, CurrentVolume);
             }
         }
-
         private bool CanTrackControlMouseDown(object p)
         {
             if (_playbackState == PlaybackState.Playing)
@@ -625,7 +672,6 @@ namespace NaudioPlayer.ViewModels
             }
             return false;
         }
-
         private bool CanTrackControlMouseUp(object p)
         {
             if (_playbackState == PlaybackState.Paused)
@@ -642,7 +688,6 @@ namespace NaudioPlayer.ViewModels
                 _audioPlayer.SetVolume(CurrentVolume);
             }
         }
-
         private bool CanVolumeControlValueChanged(object p)
         {
             return true;
@@ -670,18 +715,7 @@ namespace NaudioPlayer.ViewModels
             return true;
         }
 
-        // Schedule 
-        private void OpenWeeklySchedule(object obj)
-        {
-            var weeklyScheduleWindow = new WeeklyScheduleWindow();
-            weeklyScheduleWindow.ShowDialog();
-        }
-
-        private bool CanOpenWeeklySchedule(object obj)
-        {
-            return true;
-        }
-
+        
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

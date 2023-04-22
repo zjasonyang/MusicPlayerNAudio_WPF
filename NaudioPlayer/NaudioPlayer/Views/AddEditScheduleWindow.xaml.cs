@@ -12,20 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace NaudioPlayer
+namespace NaudioPlayer.Views
 {
-    public partial class WeeklyScheduleWindow : Window
+    /// <summary>
+    /// Interaction logic for AddEditScheduleWindow.xaml
+    /// </summary>
+    public partial class AddEditScheduleWindow : Window
     {
-        public WeeklyScheduleWindow()
+        public AddEditScheduleWindow()
         {
             InitializeComponent();
-            DataContext = new WeeklyScheduleWindowViewModel();
-        }
-
-        private void Windows_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
-                this.DragMove();
         }
     }
 }
