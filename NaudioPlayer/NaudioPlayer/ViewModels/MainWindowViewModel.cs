@@ -18,6 +18,7 @@ using System.Timers;
 using System.Windows.Threading;
 using System;
 using NAudio.Wave;
+using NaudioPlayer.Views;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -27,6 +28,7 @@ namespace NaudioPlayer.ViewModels
         {
             Playing, Stopped, Paused
         }
+
 
         private PlaybackState _playbackState;
 
@@ -42,7 +44,8 @@ namespace NaudioPlayer.ViewModels
         private double _currentTrackLenght;
         private double _currentTrackPosition;
         private string _playPauseImageSource;
-        private float _currentVolume;
+        private float _currentVolume=0.5f;
+        private float _previousVolume;
 
 
         public string Title
@@ -76,9 +79,15 @@ namespace NaudioPlayer.ViewModels
                 if (value == _currentVolume) return;
                 _currentVolume = value;
                 OnPropertyChanged(nameof(CurrentVolume));
+                if (_audioPlayer != null)
+                {
+                    _audioPlayer.SetVolume(value);
+                }
+
             }
         }
 
+        
         public double CurrentTrackLenght
         {
             get { return _currentTrackLenght; }
@@ -168,6 +177,9 @@ namespace NaudioPlayer.ViewModels
         public ICommand TrackControlMouseDownCommand { get; set; }
         public ICommand TrackControlMouseUpCommand { get; set; }
         public ICommand VolumeControlValueChangedCommand { get; set; }
+        public ICommand MuteUnmuteCommand { get; set; }
+
+        public ICommand OpenWeeklyScheduleCommand { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -180,11 +192,13 @@ namespace NaudioPlayer.ViewModels
             LoadCommands();
 
             Playlist = new ObservableCollection<Track>();
-            
+            LoadDefaultPlaylist();
+
+
             _playbackState = PlaybackState.Stopped;
 
             PlayPauseImageSource = "../Images/play.png";
-            CurrentVolume = 0.5F;
+            //CurrentVolume = 0.5F;
 
             //var timer = new System.Timers.Timer();
             //timer.Interval = 300;
@@ -210,10 +224,13 @@ namespace NaudioPlayer.ViewModels
             if (_audioPlayer != null)
             {
                 double newPosition = _audioPlayer.GetPositionInSeconds();
+                float currentVolume = _audioPlayer.GetVolume();
+                int currentVolumePercentage = (int)(currentVolume * 100);
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     CurrentTrackPosition = newPosition;
-                    Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
+                    Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}, volume: {currentVolumePercentage}%");
                 });
             }
         }
@@ -293,6 +310,10 @@ namespace NaudioPlayer.ViewModels
             TrackControlMouseDownCommand = new RelayCommand(TrackControlMouseDown, CanTrackControlMouseDown);
             TrackControlMouseUpCommand = new RelayCommand(TrackControlMouseUp, CanTrackControlMouseUp);
             VolumeControlValueChangedCommand = new RelayCommand(VolumeControlValueChanged, CanVolumeControlValueChanged);
+            MuteUnmuteCommand = new RelayCommand(MuteUnmute, CanMuteUnmute);
+
+            // Schedule commands
+            OpenWeeklyScheduleCommand = new RelayCommand(OpenWeeklySchedule, CanOpenWeeklySchedule);
         }
 
         // Menu commands
@@ -373,7 +394,7 @@ namespace NaudioPlayer.ViewModels
                         trackNumber++;
                     }
                 }
-                Playlist = new ObservableCollection<Track>(Playlist.OrderBy(z => z.FriendlyName).ToList());
+                Playlist = new ObservableCollection<Track>(Playlist.OrderBy(z => z.Number).ToList());
             }
         }
 
@@ -406,13 +427,36 @@ namespace NaudioPlayer.ViewModels
 
         private void LoadPlaylist(object p)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "PLAYLIST files (*.playlist) | *.playlist";
-            if (ofd.ShowDialog() == true)
+            //var ofd = new OpenFileDialog();
+
+            //ofd.Filter = "PLAYLIST files (*.playlist) | *.playlist";
+            //if (ofd.ShowDialog() == true)
+            //{
+            //    Playlist = ToObservableCollection(new PlaylistLoader().Load(ofd.FileName));
+            //}
+
+            string filePath = p as string;
+
+            if (filePath == null)
             {
-                //Playlist = new PlaylistLoader().Load(ofd.FileName).ToObservableCollection();
-                Playlist = ToObservableCollection(new PlaylistLoader().Load(ofd.FileName));
+                var ofd = new OpenFileDialog();
+                ofd.Filter = "PLAYLIST files (*.playlist) | *.playlist";
+                if (ofd.ShowDialog() == true)
+                {
+                    filePath = ofd.FileName;
+                }
             }
+
+            if (filePath != null && File.Exists(filePath))
+            {
+                Playlist = ToObservableCollection(new PlaylistLoader().Load(filePath));
+            }
+        }
+
+        private void LoadDefaultPlaylist()
+        {
+            string defaultPlaylistPath = "_playlist/default.playlist"; 
+            LoadPlaylist(defaultPlaylistPath);
         }
 
         private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
@@ -443,31 +487,21 @@ namespace NaudioPlayer.ViewModels
         {
             if (CurrentlySelectedTrack != null)
             {
-                // If we are selecting the clip that is playing, just do play/pause otherwise create a new AudioPlayer to play another clip
+                // If we are selecting a new clip, stop the current one and create a new AudioPlayer to play the new clip
                 if (CurrentlyPlayingTrack != CurrentlySelectedTrack)
                 {
-                    if (CurrentlyPlayingTrack == null || _playbackState == PlaybackState.Stopped)
+                    // Stop and release the resources of the current audio player
+                    if (_audioPlayer != null)
                     {
-                        _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
-                        _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-                        _audioPlayer.PlaybackPaused += _audioPlayer_PlaybackPaused;
-                        _audioPlayer.PlaybackResumed += _audioPlayer_PlaybackResumed;
-                        _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
-                        CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
-                        CurrentlyPlayingTrack = CurrentlySelectedTrack;
+                        _audioPlayer.PlaybackPaused -= _audioPlayer_PlaybackPaused;
+                        _audioPlayer.PlaybackResumed -= _audioPlayer_PlaybackResumed;
+                        _audioPlayer.PlaybackStopped -= _audioPlayer_PlaybackStopped;
+                        StopPlayback(null);
+                        _audioPlayer.Dispose();
+                        _audioPlayer = null;
                     }
-                    else
-                    {
-                        if (_audioPlayer != null)
-                        {
-                            StopPlayback(null);
-                            // This is here to stop stuttering of audio while one clip ends other begins
-                            Thread.Sleep(500);
-                        }
-                    }
-                }
-                if (_playbackState == PlaybackState.Stopped)
-                {
+
+                    // Create a new audio player for the selected track
                     _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
                     _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
                     _audioPlayer.PlaybackPaused += _audioPlayer_PlaybackPaused;
@@ -476,10 +510,15 @@ namespace NaudioPlayer.ViewModels
                     CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
                     CurrentlyPlayingTrack = CurrentlySelectedTrack;
                 }
+
+                // Toggle play/pause for the current audio player
                 _audioPlayer.TogglePlayPause(CurrentVolume);
                 _timer.Start(); // Start updating the position
             }
         }
+
+
+
 
         //private void StartPlayback(object p)
         //{
@@ -520,6 +559,7 @@ namespace NaudioPlayer.ViewModels
                 _timer.Stop(); // Stop updating the position
             }
         }
+
         private bool CanStopPlayback(object p)
         {
             if (_playbackState == PlaybackState.Playing || _playbackState == PlaybackState.Paused)
@@ -607,6 +647,41 @@ namespace NaudioPlayer.ViewModels
         {
             return true;
         }
+
+        private void MuteUnmute(object obj)
+        {
+            if (_audioPlayer != null)
+            {
+                if (_audioPlayer.GetVolume() > 0)
+                {
+                    _previousVolume = _audioPlayer.GetVolume();
+                    _audioPlayer.SetVolume(0);
+                    CurrentVolume = 0;
+                }
+                else
+                {
+                    _audioPlayer.SetVolume(_previousVolume);
+                    CurrentVolume = _previousVolume;
+                }
+            }
+        }
+        private bool CanMuteUnmute(object p)
+        {
+            return true;
+        }
+
+        // Schedule 
+        private void OpenWeeklySchedule(object obj)
+        {
+            var weeklyScheduleWindow = new WeeklyScheduleWindow();
+            weeklyScheduleWindow.ShowDialog();
+        }
+
+        private bool CanOpenWeeklySchedule(object obj)
+        {
+            return true;
+        }
+
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

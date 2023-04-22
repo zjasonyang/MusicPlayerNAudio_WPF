@@ -1,0 +1,30 @@
+﻿<Window x:Class="NaudioPlayer.WeeklyScheduleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:NaudioPlayer.ViewModels"
+        xmlns:uc="clr-namespace:NaudioPlayer.Views"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+        ResizeMode="NoResize" 
+        AllowsTransparency="True" 
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" 
+        Background="Transparent"
+        MouseDown="Windows_MouseDown"
+        Title="Weekly Schedule" Height="300" Width="400"
+        >
+
+    <Window.DataContext>
+        <vm:WeeklyScheduleWindowViewModel/>
+    </Window.DataContext>
+
+    <Border Background="White" CornerRadius="40" BorderBrush="gray" BorderThickness="2">
+        <Grid Margin="20 10 20 10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Text="每週排程" FontWeight="Bold" FontSize="16" Margin="10" HorizontalAlignment="Center" />
+        </Grid>
+    </Border>
+
+</Window>
