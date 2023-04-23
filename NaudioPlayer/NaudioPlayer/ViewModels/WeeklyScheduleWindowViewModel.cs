@@ -1,9 +1,7 @@
 ﻿using NaudioPlayer;
 using NaudioPlayer.Models;
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
 using System.Windows.Input;
-using System;
 
 public class WeeklyScheduleWindowViewModel : ObservableObject
 {
@@ -45,27 +43,24 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
             {
                 Name = "Sample schedule 1",
                 PlaylistPath = "Sample playlist path 1",
-                StartTime = TimeSpan.Parse("18:00"),
-                EndTime = TimeSpan.Parse("24:00"),
-                DaysOfWeek = new List<DayOfWeek> { DayOfWeek.Monday }
+                StartTime = "Sample start time 1",
+                EndTime = "Sample end time 1",
+                DaysOfWeek = "Sample days of week 1"
             }
         };
     }
-    
-        
 
     private void LoadCommands()
     {
-        //AddScheduleCommand = new RelayCommand(AddSchedule, CanAddSchedule);
-        SaveScheduleCommand = new RelayCommand(SaveSchedule, CanSaveSchedule);
-        DeleteScheduleCommand = new RelayCommand(DeleteSchedule, CanDeleteSchedule);
+        AddScheduleCommand = new RelayCommand(AddSchedule);
+        SaveScheduleCommand = new RelayCommand(SaveSchedule);
+        DeleteScheduleCommand = new RelayCommand(DeleteSchedule);
     }
 
     private void AddSchedule(object p)
     {
         // Logic to add a new schedule
     }
-    
 
     private void SaveSchedule(object p)
     {
@@ -84,16 +79,10 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
             // If we have a SelectedWeeklySchedule, update its properties
             SelectedWeeklySchedule.Name = "Updated name";
             SelectedWeeklySchedule.PlaylistPath = "Updated playlist path";
-            SelectedWeeklySchedule.StartTime = TimeSpan.Parse("12:00"); // Use TimeSpan.Parse to convert the string to TimeSpan
-            SelectedWeeklySchedule.EndTime = TimeSpan.Parse("18:00"); // Use TimeSpan.Parse to convert the string to TimeSpan
-            SelectedWeeklySchedule.DaysOfWeek = new List<DayOfWeek> { DayOfWeek.Tuesday, DayOfWeek.Thursday }; // Update the DaysOfWeek list with new DayOfWeek values
+            SelectedWeeklySchedule.StartTime = "Updated start time";
+            SelectedWeeklySchedule.EndTime = "Updated end time";
+            SelectedWeeklySchedule.DaysOfWeek = "Updated days of week";
         }
-
-    }
-    private bool CanSaveSchedule(object p)
-    {
-        // Logic to determine if we can add a new schedule
-        return true;
     }
 
     private void DeleteSchedule(object p)
@@ -104,11 +93,4 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
             WeeklySchedules.Remove(SelectedWeeklySchedule);
         }
     }
-
-    private bool CanDeleteSchedule(object p)
-    {
-        // Logic to determine if we can save the schedule
-        return true;
-    }
-
 }
