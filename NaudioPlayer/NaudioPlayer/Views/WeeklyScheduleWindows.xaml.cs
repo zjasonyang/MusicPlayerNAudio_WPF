@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace NaudioPlayer.Views
 {
     /// <summary>
-    /// Interaction logic for Player.xaml
+    /// Interaction logic for WeeklyScheduleWindows.xaml
     /// </summary>
-    public partial class Player : UserControl
+    public partial class WeeklyScheduleWindows : Window
     {
-        public Player()
+        public WeeklyScheduleWindows()
         {
             InitializeComponent();
         }
