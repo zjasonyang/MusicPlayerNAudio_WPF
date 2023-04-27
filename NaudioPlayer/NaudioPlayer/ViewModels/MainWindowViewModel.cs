@@ -498,7 +498,6 @@ namespace NaudioPlayer.ViewModels
         private void OpenWeeklySchedule(object obj)
         {
             var weeklyScheduleWindow = new WeeklyScheduleWindow();
-            weeklyScheduleWindow.DataContext = new WeeklyScheduleWindowViewModel();
             weeklyScheduleWindow.ShowDialog();
         }
         private bool CanOpenWeeklySchedule(object obj)

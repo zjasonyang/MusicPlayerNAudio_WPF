@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="200">
 
-    <ItemsControl ItemsSource="{Binding SelectedDays}">
+    <ItemsControl ItemsSource="{Binding ListBoxSelectedDays}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" />

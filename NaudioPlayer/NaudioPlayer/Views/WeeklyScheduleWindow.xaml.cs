@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,8 @@ namespace NaudioPlayer.Views
         public WeeklyScheduleWindow()
         {
             InitializeComponent();
-            DataContext = new WeeklyScheduleWindowViewModel();
+            var viewModel = new WeeklyScheduleWindowViewModel();           
+            DataContext = viewModel;
         }
 
         private void Windows_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
