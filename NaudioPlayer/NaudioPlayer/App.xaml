@@ -8,9 +8,6 @@
              xmlns:converter="clr-namespace:MahApps.Metro.IconPacks.Converter;assembly=MahApps.Metro.IconPacks.Core">
     <Application.Resources>
 
-      
-        
-
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         
         <!--colors-->

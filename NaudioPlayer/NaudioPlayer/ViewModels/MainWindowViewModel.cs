@@ -484,12 +484,15 @@ namespace NaudioPlayer.ViewModels
             DayOfWeek today = now.DayOfWeek;
             TimeSpan currentTime = now.TimeOfDay;
 
+
             foreach (var schedule in WeeklySchedules)
             {
-                if (schedule.DaysOfWeek.Contains(today) && currentTime >= schedule.StartTime && currentTime <= schedule.EndTime)
-                {
-                    return schedule;
-                }
+                //schedule.StartTime.Split(':')[0]
+                //var SDate = new TimeSpan()
+                //if (schedule.DaysOfWeek.Contains(today) && currentTime >= schedule.StartTime && currentTime <= schedule.EndTime)
+                //{
+                //    return schedule;
+                //}
             }
 
             return null;

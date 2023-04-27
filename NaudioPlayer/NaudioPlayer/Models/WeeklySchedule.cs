@@ -35,25 +35,33 @@ namespace NaudioPlayer.Models
             }
         }
 
-        private TimeSpan _startTime;
-        public TimeSpan StartTime
+        private string _startTime;
+        public string StartTime
         {
             get => _startTime;
             set
             {
-                _startTime = value;
-                OnPropertyChanged();
+                DateTime sdate = new DateTime();
+                if(DateTime.TryParse(value, out sdate))
+                {
+                    _startTime = sdate.ToString("HH:mm");
+                    OnPropertyChanged();
+                }
             }
         }
 
-        private TimeSpan _endTime;
-        public TimeSpan EndTime
+        private string _endTime;
+        public string EndTime
         {
             get => _endTime;
             set
             {
-                _endTime = value;
-                OnPropertyChanged();
+                DateTime edate = new DateTime();
+                if(DateTime.TryParse(value, out edate))
+                {
+                    _endTime = edate.ToString("HH:mm");
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -71,9 +79,9 @@ namespace NaudioPlayer.Models
         public WeeklySchedule()
         {
             Name = "New Schedule";
-            PlaylistPath = "newPath";
-            //StartTime = TimeSpan.Parse("08:00");
-            //EndTime = TimeSpan.Parse("16:00");
+            PlaylistPath = "default";
+            StartTime = TimeSpan.Parse("08:00").ToString(@"hh\:mm");
+            EndTime = TimeSpan.Parse("16:00").ToString(@"hh\:mm");
             DaysOfWeek = new List<DayOfWeek> { DayOfWeek.Monday };
         }
 

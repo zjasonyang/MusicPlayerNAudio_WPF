@@ -106,7 +106,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\DaysOfWeekControl.xaml">
+    <Page Include="Views\___DaysOfWeekControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -134,8 +134,8 @@
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\WeeklySchedule.cs" />
     <Compile Include="ViewModels\WeeklyScheduleWindowViewModel.cs" />
-    <Compile Include="Views\DaysOfWeekControl.xaml.cs">
-      <DependentUpon>DaysOfWeekControl.xaml</DependentUpon>
+    <Compile Include="Views\___DaysOfWeekControl.xaml.cs">
+      <DependentUpon>___DaysOfWeekControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WeeklyScheduleWindow.xaml.cs">
       <DependentUpon>WeeklyScheduleWindow.xaml</DependentUpon>

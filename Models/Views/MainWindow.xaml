@@ -1,0 +1,229 @@
+﻿<Window x:Class="NaudioPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NaudioPlayer"
+        xmlns:vm="clr-namespace:NaudioPlayer.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:uc="clr-namespace:NaudioPlayer.Views"
+        mc:Ignorable="d"
+        Height="700" Width="800"
+        ResizeMode="NoResize" 
+        AllowsTransparency="True" 
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" 
+        Background="Transparent"
+        MouseDown="Windows_MouseDown"
+        >
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Border Background="White" CornerRadius="40" BorderBrush="gray" BorderThickness="2">
+        <!--global layout-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!--bottom secton-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+            
+            <!--left side menu-->
+            <Border Background="White" CornerRadius="40 0 0 40" Grid.RowSpan="2">
+                <StackPanel Margin="0 20 0 0">
+                    <!--contorl bar-->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="63 10 0 10">
+                        <Button Background="Transparent" BorderBrush="Transparent" Command="{Binding ExitApplicationCommand}">
+                            <Ellipse Fill="#ff6258" Width="15" Height="15"/>
+                        </Button>
+                        <Button  Margin="7 0 0 0" Background="Transparent" BorderBrush="Transparent" Command="{Binding MinimizeWindowCommand}">
+                            <Ellipse Fill="#ffbf2f" Width="15" Height="15"/>
+                        </Button>
+                    </StackPanel>
+
+                    <TextBlock Text="選單" Style="{StaticResource menuTitle}"/>
+                    <!-- menu -->
+                    <StackPanel>
+                        <!--add files-->
+                        <RadioButton x:Name="AddFilesRadioButton"  Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="新增內容" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=AddFilesRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="加入檔案" Command="{Binding AddFileToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            <MenuItem Header="加入資料夾" Command="{Binding AddFolderToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                        </StackPanel>
+                        <!--playlist-->
+                        <RadioButton x:Name="PlaylistRadioButton" Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="播放清單" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=PlaylistRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="儲存播放清單" Command="{Binding SavePlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            <MenuItem Header="載入播放清單" Command="{Binding LoadPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                        </StackPanel>
+                        <!--schedule-->
+                        <RadioButton x:Name="scheduleRadioButton" Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="排程" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=scheduleRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="開啟排程視窗" Style="{StaticResource customMenuItem}" 
+                                      Command="{Binding OpenWeeklyScheduleCommand}"/>
+                            
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            
+            <!-- music section -->
+            <StackPanel Grid.Column="1" Background="White" Margin="40 50 10 10">
+                <TextBlock Text="九太播放器" Style="{StaticResource titleText}"/>
+
+                <Border CornerRadius="20" Margin="0 20 0 0">
+                    <Border.Background>
+                        <LinearGradientBrush>
+                            <GradientStop Color="{StaticResource bgcolor3}" Offset="0"/>
+                            <GradientStop Color="{StaticResource bgcolor4}" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="#1fae7e"/>
+                    </Border.Effect>
+
+                    <!-- music list -->
+                    <StackPanel Margin="30">
+                        <TextBlock Text="正在播放" Foreground="white" FontSize="26" FontWeight="Bold" Margin="0 0 0 10"/>
+                        <ListBox ItemsSource="{Binding Playlist}" 
+                                 SelectedItem="{Binding CurrentlySelectedTrack}"
+                                 Background="Transparent" 
+                                 BorderBrush="Transparent">
+                            <ListBox.Resources>
+                                <Style TargetType="ListBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBox">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+                                                        <ItemsPresenter />
+                                                    </ScrollViewer>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <uc:SongItem />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+            
+            <!--player section-->
+            <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource color3}" CornerRadius="40 0 40 0" Margin="40 0 0 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="40 0 5 0">
+                        <Grid.ColumnDefinitions>
+                            <!--播放控制 bar-->
+                            <ColumnDefinition Width="200"/>
+                            <!--現在秒數-->
+                            <ColumnDefinition Width="100"/>
+                            <!--音效圖示-->
+                            <ColumnDefinition Width="*"/>
+                            <!--音量大小 bar-->
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Slider Grid.Column="0"
+                                Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                Margin="0 20 10 10" Width="200"
+                                Minimum="0" Maximum="{Binding CurrentTrackLenght, Mode=OneWay}"
+                                Value="{Binding CurrentTrackPosition, Mode=TwoWay}"
+                                x:Name="TrackPositionSlider">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewMouseDown">
+                                    <i:InvokeCommandAction Command="{Binding TrackControlMouseDownCommand}"/>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="PreviewMouseUp">
+                                    <i:InvokeCommandAction Command="{Binding TrackControlMouseUpCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Slider>
+
+                        <StackPanel x:Name="CurrentTrackPlayTime" Grid.Column="1" Margin="0 10 0 0" 
+                                    Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <Label Style="{StaticResource playtimeText}" Content="{Binding CurrentTrackPositionString}" />
+                            <Label Style="{StaticResource playtimeText}" Content="/" />
+                            <Label Style="{StaticResource playtimeText}" Content="{Binding CurrentTrackLenghtString}" />
+                        </StackPanel>
+
+                        <Button Grid.Column="2" Width="20" Height="20" Margin="0 10 0 0" Command="{Binding MuteUnmuteCommand}" Style="{StaticResource playerButton}"
+                                HorizontalAlignment="Right">
+                            <Icon:PackIconMaterial Kind="VolumeHigh"/>
+                        </Button>
+
+                        <Slider Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Margin="10 20 0 10" 
+                                Minimum="0" Maximum="1.0"
+                                Width="100"
+                                Value="{Binding CurrentVolume, Mode=TwoWay}"
+                                x:Name="VolumeSlider">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="ValueChanged">
+                                    <i:InvokeCommandAction Command="{Binding VolumeControlValueChangedCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Slider>
+                    </Grid>
+                    
+                    <!--play control button-->
+                    <StackPanel Grid.Row="1"  Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 10">
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding RewindToStartCommand}" Style="{StaticResource playerButton}" >
+                            <Icon:PackIconMaterial Kind="SkipPrevious" />
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding StartPlaybackCommand}" Style="{StaticResource playerButton}" >
+                            <Icon:PackIconMaterial Kind="PlayPause"/>
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding ForwardToEndCommand}" Style="{StaticResource playerButton}" >
+                            <Icon:PackIconMaterial Kind="SkipNext"/>
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding StopPlaybackCommand}" Style="{StaticResource playerButton}" >
+                            <Icon:PackIconMaterial Kind="Stop"/>
+                        </Button>
+                        <Button Width="30" Height="30" Margin="5" Command="{Binding ShuffleCommand}" Style="{StaticResource playerButton}" >
+                            <Icon:PackIconMaterial Kind="Shuffle"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border> 
+    
+    
+    
+</Window>

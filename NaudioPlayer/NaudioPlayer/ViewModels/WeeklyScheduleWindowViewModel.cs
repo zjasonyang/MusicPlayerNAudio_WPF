@@ -94,10 +94,10 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
             WeeklySchedule defaultSchedule = new WeeklySchedule
             {
                 Name = "Default",
-                PlaylistPath = "defaultPath",
-                StartTime = TimeSpan.Parse("08:00"),
-                EndTime = TimeSpan.Parse("16:00"),
-                DaysOfWeek = new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Wednesday }
+                PlaylistPath = "default",
+                StartTime = TimeSpan.Parse("08:00").ToString(@"hh\:mm"),
+                EndTime = TimeSpan.Parse("22:00").ToString(@"hh\:mm"),
+                DaysOfWeek = new List<DayOfWeek> { DayOfWeek.Sunday}
             };
 
             WeeklySchedules = new ObservableCollection<WeeklySchedule> { defaultSchedule };
@@ -233,6 +233,4 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
     {
         return SelectedWeeklySchedule != null;
     }
-
-
 }
