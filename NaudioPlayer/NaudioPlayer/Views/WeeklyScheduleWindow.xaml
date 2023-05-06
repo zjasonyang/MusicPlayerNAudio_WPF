@@ -23,6 +23,7 @@
                 <GridView>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="100"/>
                     <GridViewColumn Header="Playlist" DisplayMemberBinding="{Binding PlaylistPath}" Width="100"/>
+                    <!--<GridViewColumn Header="Days" DisplayMemberBinding="{Binding DaysOfWeekString}" Width="200"/>-->
                     <GridViewColumn Header="Days" DisplayMemberBinding="{Binding DaysOfWeekString}" Width="200"/>
                     <GridViewColumn Header="Start Time" DisplayMemberBinding="{Binding StartTime, StringFormat={}{0:hh\\:mm}}" Width="100"/>
                     <GridViewColumn Header="End Time" DisplayMemberBinding="{Binding EndTime, StringFormat={}{0:hh\\:mm}}" Width="100"/>
@@ -74,7 +75,17 @@
                 </Border>
             </Popup>
         </Grid>
-        <Grid Grid.Row="2" Margin="0 10 0 0">
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0,10,0,0">
+            <CheckBox Content="Monday" IsChecked="{Binding SelectedWeeklySchedule.MondayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+            <CheckBox Content="Tuesday" IsChecked="{Binding SelectedWeeklySchedule.TuesdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+            <CheckBox Content="Wednesday" IsChecked="{Binding SelectedWeeklySchedule.WednesdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+            <CheckBox Content="Thursday" IsChecked="{Binding SelectedWeeklySchedule.ThursdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+            <CheckBox Content="Friday" IsChecked="{Binding SelectedWeeklySchedule.FridayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+            <CheckBox Content="Saturday" IsChecked="{Binding SelectedWeeklySchedule.SaturdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+            <CheckBox Content="Sunday" IsChecked="{Binding SelectedWeeklySchedule.SundayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
+        </StackPanel>
+
+        <!--<Grid Grid.Row="2" Margin="0 10 0 0">
             <ItemsControl Grid.Column="2" ItemsSource="{Binding SelectedDays}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -89,7 +100,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </Grid>
+        </Grid>-->
     </Grid>
 
 </Window>

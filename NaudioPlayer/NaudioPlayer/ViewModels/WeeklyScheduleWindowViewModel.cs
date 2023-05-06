@@ -89,33 +89,17 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
 
         WeeklySchedules = LoadScheduleFromJson();
 
+        WeeklySchedules = LoadScheduleFromJson();
+
         if (WeeklySchedules == null || WeeklySchedules.Count == 0)
         {
-            WeeklySchedule defaultSchedule = new WeeklySchedule
-            {
-                Name = "Default",
-                PlaylistPath = "default",
-                StartTime = TimeSpan.Parse("08:00").ToString(@"hh\:mm"),
-                EndTime = TimeSpan.Parse("22:00").ToString(@"hh\:mm"),
-                DaysOfWeek = new List<DayOfWeek> { DayOfWeek.Sunday}
-            };
+            WeeklySchedule defaultSchedule = new WeeklySchedule();
 
             WeeklySchedules = new ObservableCollection<WeeklySchedule> { defaultSchedule };
-            SaveScheduleToJson(WeeklySchedules); // Save the default schedule to the JSON file
+            SaveScheduleToJson(WeeklySchedules); 
         }
 
-        AllDaysOfWeek = new ObservableCollection<DayOfWeek>
-        {
-            DayOfWeek.Monday,
-            DayOfWeek.Tuesday,
-            DayOfWeek.Wednesday,
-            DayOfWeek.Thursday,
-            DayOfWeek.Friday,
-            DayOfWeek.Saturday,
-            DayOfWeek.Sunday
-        };
-
-        ListBoxSelectedDays = new List<DayOfWeek>();
+        
         LoadCommands();
     }
 
@@ -129,18 +113,16 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
     {
         if (SelectedWeeklySchedule != null)
         {
-            var newSelectedDays = new ObservableCollection<SelectableDay>();
-
-            foreach (var day in AllDaysOfWeek)
+            SelectedDays = new ObservableCollection<SelectableDay>
             {
-                newSelectedDays.Add(new SelectableDay
-                {
-                    Day = day,
-                    IsSelected = SelectedWeeklySchedule.DaysOfWeek.Contains(day)
-                });
-            }
-
-            SelectedDays = newSelectedDays;
+                new SelectableDay { Day = DayOfWeek.Monday, IsSelected = SelectedWeeklySchedule.MondayIsSelected },
+                new SelectableDay { Day = DayOfWeek.Tuesday, IsSelected = SelectedWeeklySchedule.TuesdayIsSelected },
+                new SelectableDay { Day = DayOfWeek.Wednesday, IsSelected = SelectedWeeklySchedule.WednesdayIsSelected },
+                new SelectableDay { Day = DayOfWeek.Thursday, IsSelected = SelectedWeeklySchedule.ThursdayIsSelected },
+                new SelectableDay { Day = DayOfWeek.Friday, IsSelected = SelectedWeeklySchedule.FridayIsSelected },
+                new SelectableDay { Day = DayOfWeek.Saturday, IsSelected = SelectedWeeklySchedule.SaturdayIsSelected },
+                new SelectableDay { Day = DayOfWeek.Sunday, IsSelected = SelectedWeeklySchedule.SundayIsSelected }
+            };
         }
     }
 

@@ -19,6 +19,8 @@ using System.Windows.Threading;
 using System;
 using NAudio.Wave;
 using NaudioPlayer.Views;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -152,11 +154,20 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
-        public ObservableCollection<WeeklySchedule> WeeklySchedules { get; set; }
+        //public ObservableCollection<WeeklySchedule> WeeklySchedules { get; set; }
 
-        public WeeklySchedule SelectedWeeklySchedule { get; set; }
+        //public WeeklySchedule SelectedWeeklySchedule { get; set; }
 
-      
+        private ObservableCollection<WeeklySchedule> LoadScheduleFromJson()
+        {
+            if (File.Exists("weeklySchedules.json"))
+            {
+                string json = File.ReadAllText("weeklySchedules.json");
+                Debug.WriteLine(json);
+                return JsonConvert.DeserializeObject<ObservableCollection<WeeklySchedule>>(json);
+            }
+            return null;
+        }
 
 
 
@@ -193,30 +204,38 @@ namespace NaudioPlayer.ViewModels
         {
             Application.Current.MainWindow.Closing += MainWindow_Closing;
 
-            Title = "NaudioPlayer";
-
-            LoadCommands();
-
+            Title = "九太播放器";
             Playlist = new ObservableCollection<Track>();
+
+            string playlistPath = GetPlaylistPathForCurrentTime();
+
+            if (!string.IsNullOrEmpty(playlistPath))
+            {
+                LoadPlaylist(playlistPath);
+                //開始播放
+                Debug.WriteLine("playlist.count = " + Playlist.Count);
+                if (Playlist != null && Playlist.Count > 0)
+                {
+                    CurrentlySelectedTrack = Playlist[0]; // 設置第一首歌曲為當前選擇的歌曲
+                    StartPlayback(null); // 開始播放
+                    
+                }
+            }
+
+
+           
+            Debug.WriteLine(Playlist);
             LoadDefaultPlaylist();
-
-            WeeklySchedules = new ObservableCollection<WeeklySchedule>();
-
 
 
             _playbackState = PlaybackState.Stopped;
 
             PlayPauseImageSource = "../Images/play.png";
-            //CurrentVolume = 0.5F;
-
-            //var timer = new System.Timers.Timer();
-            //timer.Interval = 300;
-            //timer.Elapsed += Timer_Elapsed;
-            //timer.Start();
 
             _timer = new System.Timers.Timer(1000); // 1000 milliseconds or 1 second interval
             _timer.Elapsed += Timer_Elapsed;
             _timer.AutoReset = true;
+            LoadCommands();
 
         }
 
@@ -263,7 +282,6 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
-        
 
         private void _audioPlayer_PlaybackStopped()
         {
@@ -478,25 +496,31 @@ namespace NaudioPlayer.ViewModels
 
 
         // Schedule command
-        private WeeklySchedule GetCurrentScheduledPlaylist()
+
+        private string GetPlaylistPathForCurrentTime()
         {
-            DateTime now = DateTime.Now;
-            DayOfWeek today = now.DayOfWeek;
-            TimeSpan currentTime = now.TimeOfDay;
+            var currentDateTime = DateTime.Now;
+            var currentDayOfWeek = currentDateTime.DayOfWeek;
+            var currentTime = currentDateTime.TimeOfDay;
 
-
-            foreach (var schedule in WeeklySchedules)
+            foreach (var schedule in LoadScheduleFromJson())
             {
-                //schedule.StartTime.Split(':')[0]
-                //var SDate = new TimeSpan()
-                //if (schedule.DaysOfWeek.Contains(today) && currentTime >= schedule.StartTime && currentTime <= schedule.EndTime)
-                //{
-                //    return schedule;
-                //}
+                TimeSpan scheduleStartTime = TimeSpan.Parse(schedule.StartTime);
+                TimeSpan scheduleEndTime = TimeSpan.Parse(schedule.EndTime);
+                List<DayOfWeek> scheduleDaysOfWeek = schedule.GetSelectedDaysOfWeek();
+
+                if (scheduleDaysOfWeek.Contains(currentDayOfWeek) &&
+                    currentTime >= scheduleStartTime &&
+                    currentTime <= scheduleEndTime)
+                {
+                    return schedule.PlaylistPath;
+                }
             }
 
             return null;
         }
+
+        
 
         private void OpenWeeklySchedule(object obj)
         {
@@ -507,10 +531,6 @@ namespace NaudioPlayer.ViewModels
         {
             return true;
         }
-
-        
-
-
 
 
         private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
@@ -534,42 +554,32 @@ namespace NaudioPlayer.ViewModels
 
         private void StartPlayback(object p)
         {
-            WeeklySchedule scheduledPlaylist = GetCurrentScheduledPlaylist();
-            if (scheduledPlaylist != null)
+            if (CurrentlyPlayingTrack != CurrentlySelectedTrack)
             {
-                LoadPlaylist(scheduledPlaylist.PlaylistPath);
-            }
-
-            if (CurrentlySelectedTrack != null)
-            {
-                // If we are selecting a new clip, stop the current one and create a new AudioPlayer to play the new clip
-                if (CurrentlyPlayingTrack != CurrentlySelectedTrack)
+                // Stop and release the resources of the current audio player
+                if (_audioPlayer != null)
                 {
-                    // Stop and release the resources of the current audio player
-                    if (_audioPlayer != null)
-                    {
-                        _audioPlayer.PlaybackPaused -= _audioPlayer_PlaybackPaused;
-                        _audioPlayer.PlaybackResumed -= _audioPlayer_PlaybackResumed;
-                        _audioPlayer.PlaybackStopped -= _audioPlayer_PlaybackStopped;
-                        StopPlayback(null);
-                        _audioPlayer.Dispose();
-                        _audioPlayer = null;
-                    }
-
-                    // Create a new audio player for the selected track
-                    _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
-                    _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-                    _audioPlayer.PlaybackPaused += _audioPlayer_PlaybackPaused;
-                    _audioPlayer.PlaybackResumed += _audioPlayer_PlaybackResumed;
-                    _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
-                    CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
-                    CurrentlyPlayingTrack = CurrentlySelectedTrack;
+                    _audioPlayer.PlaybackPaused -= _audioPlayer_PlaybackPaused;
+                    _audioPlayer.PlaybackResumed -= _audioPlayer_PlaybackResumed;
+                    _audioPlayer.PlaybackStopped -= _audioPlayer_PlaybackStopped;
+                    StopPlayback(null);
+                    _audioPlayer.Dispose();
+                    _audioPlayer = null;
                 }
 
-                // Toggle play/pause for the current audio player
-                _audioPlayer.TogglePlayPause(CurrentVolume);
-                _timer.Start(); // Start updating the position
+                // Create a new audio player for the selected track
+                _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
+                _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
+                _audioPlayer.PlaybackPaused += _audioPlayer_PlaybackPaused;
+                _audioPlayer.PlaybackResumed += _audioPlayer_PlaybackResumed;
+                _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
+                CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
+                CurrentlyPlayingTrack = CurrentlySelectedTrack;
             }
+
+            // Toggle play/pause for the current audio player
+            _audioPlayer.TogglePlayPause(CurrentVolume);
+            _timer.Start(); // Start updating the position
         }
 
         //private void StartPlayback(object p)
