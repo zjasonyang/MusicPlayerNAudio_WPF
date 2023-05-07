@@ -8,6 +8,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:uc="clr-namespace:NaudioPlayer.Views"
+        xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
         mc:Ignorable="d"
         Height="700" Width="800"
         ResizeMode="NoResize" 
@@ -91,7 +92,7 @@
             </Border>
             
             <!-- music section -->
-            <StackPanel Grid.Column="1" Background="White" Margin="40 50 10 10">
+            <StackPanel Grid.Column="1" Background="White" Margin="40 30 10 10">
                 <TextBlock Text="九太播放器" Style="{StaticResource titleText}"/>
 
                 <Border CornerRadius="20" Margin="0 20 0 0">
@@ -112,7 +113,20 @@
                         <ListBox ItemsSource="{Binding Playlist}" 
                                  SelectedItem="{Binding CurrentlySelectedTrack}"
                                  Background="Transparent" 
-                                 BorderBrush="Transparent">
+                                 BorderBrush="Transparent"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
+                                 MaxHeight="350" >
+                            <ListBox.Template>
+                                <ControlTemplate TargetType="ListBox">
+                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </ListBox.Template>
                             <ListBox.Resources>
                                 <Style TargetType="ListBox">
                                     <Setter Property="Template">

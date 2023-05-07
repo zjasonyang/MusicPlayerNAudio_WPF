@@ -4,19 +4,30 @@
         xmlns:uc="clr-namespace:NaudioPlayer.Views"
         xmlns:converters="clr-namespace:NaudioPlayer.Converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="Weekly Schedule" Height="450" Width="800">
+        Title="Weekly Schedule" Height="450" Width="800"
+       
+        >
     
     <Window.Resources>
         <converters:DayOfWeekToStringConverter x:Key="DayOfWeekToStringConverter" />
     </Window.Resources>
 
-    <Grid Margin="10">
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
 
+        <!--<StackPanel Grid.Row="0" Margin="10 5 0 0" HorizontalAlignment="left">
+            <Button Background="Transparent" BorderBrush="Transparent" Command="{Binding ExitApplicationCommand}">
+                <Ellipse Fill="#ff6258" Width="15" Height="15"/>
+            </Button>
+            <Button  Margin="7 0 0 0" Background="Transparent" BorderBrush="Transparent" Command="{Binding MinimizeWindowCommand}">
+                <Ellipse Fill="#ffbf2f" Width="15" Height="15"/>
+            </Button>
+        </StackPanel>-->
+        
         <!-- Schedule display area -->
         <ListView x:Name="scheduleListView" Grid.Row="0" ItemsSource="{Binding WeeklySchedules}" SelectedItem="{Binding SelectedWeeklySchedule}">
             <ListView.View>
