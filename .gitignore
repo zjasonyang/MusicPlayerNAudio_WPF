@@ -243,3 +243,5 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/NaudioPlayer/NaudioPlayer/NaudioPlayer.csproj
+/NaudioPlayer/NaudioPlayer/NaudioPlayer.csproj
