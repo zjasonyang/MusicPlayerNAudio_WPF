@@ -109,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\MusicPlayControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\WeeklyScheduleWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -133,6 +137,9 @@
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\WeeklySchedule.cs" />
     <Compile Include="ViewModels\WeeklyScheduleWindowViewModel.cs" />
+    <Compile Include="Views\MusicPlayControl.xaml.cs">
+      <DependentUpon>MusicPlayControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\WeeklyScheduleWindow.xaml.cs">
       <DependentUpon>WeeklyScheduleWindow.xaml</DependentUpon>
     </Compile>
