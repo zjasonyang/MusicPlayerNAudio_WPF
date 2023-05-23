@@ -23,7 +23,7 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-    <Border Background="White" CornerRadius="40" BorderBrush="gray" BorderThickness="2">
+    <Border Background="White" CornerRadius="20" BorderBrush="gray" BorderThickness="2">
         <!--global layout-->
         <Grid>
             <Grid.RowDefinitions>
@@ -32,10 +32,10 @@
                 <RowDefinition Height="300"/>
             </Grid.RowDefinitions>
 
-            <Border Background="White" CornerRadius="40 0 0 40" Grid.RowSpan="1">
+            <Border Background="White" CornerRadius="20" Grid.RowSpan="1">
                 <StackPanel Margin="0 10 0 0">
                     <!--contorl bar-->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="63 10 0 10">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="20 10 0 10">
                         <Button Background="Transparent" BorderBrush="Transparent" Command="{Binding ExitApplicationCommand}">
                             <Ellipse Fill="#ff6258" Width="15" Height="15"/>
                         </Button>
@@ -52,7 +52,46 @@
                     <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="568"/>
                 </Grid.ColumnDefinitions>
-                
+                <Grid Grid.Column="0" Margin="-50 10 0 0">
+                    <StackPanel>
+                        <!--add files-->
+                        <RadioButton x:Name="AddFilesRadioButton"  Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="新增內容" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=AddFilesRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="加入檔案" Command="{Binding AddFileToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            <MenuItem Header="加入資料夾" Command="{Binding AddFolderToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                        </StackPanel>
+                        <!--playlist-->
+                        <RadioButton x:Name="PlaylistRadioButton" Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="播放清單" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=PlaylistRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="儲存播放清單" Command="{Binding SavePlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            <MenuItem Header="載入播放清單" Command="{Binding LoadPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                        </StackPanel>
+                        <!--schedule-->
+                        <RadioButton x:Name="scheduleRadioButton" Style="{StaticResource menuRadioButton}">
+                            <Grid>
+                                <TextBlock Text="排程" Margin="0 0 0 2"/>
+                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                            </Grid>
+                        </RadioButton>
+                        <StackPanel Visibility="{Binding IsChecked, ElementName=scheduleRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="開啟排程視窗" Style="{StaticResource customMenuItem}" 
+                                          Command="{Binding OpenWeeklyScheduleCommand}"/>
+
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+
                 <StackPanel Grid.Row="1" Grid.Column="1" Background="White" Margin="40 30 10 10">
                     <TextBlock Text="九太播放器" Style="{StaticResource titleText}"/>
 
@@ -123,7 +162,7 @@
             
             
             <!--player section-->
-            <Grid Grid.Row="2" Grid.Column="1">
+            <Grid Grid.Row="2">
                 <uc:MusicPlayControl/>
             </Grid>
         </Grid>
