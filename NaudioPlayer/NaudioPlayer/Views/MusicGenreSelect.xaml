@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="NaudioPlayer.Views.MusicGenreSelect"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:NaudioPlayer.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="768">
+    
+    <UserControl.DataContext>
+        <vm:MusicGenreSelectViewModel />
+    </UserControl.DataContext>
+    
+        <Grid Background="#030303">
+            <ItemsControl ItemsSource="{Binding Genres}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="172" Height="172" Margin="5 0 5 0 " Background="#030303">
+                            <Image Source="{Binding Image}" 
+                               Width="172" 
+                               Height="172" 
+                               Stretch="UniformToFill" 
+                               >
+                                <Image.Clip>
+                                    <RectangleGeometry Rect="0,0,172,172" RadiusX="20" RadiusY="20"/>
+                                </Image.Clip>
+                            </Image>
+                            <TextBlock Text="{Binding Name}" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center" 
+                                   FontWeight="Bold"
+                                   Foreground="white"
+                                   FontSize="30"
+                                   FontFamily="Consolas"
+                                   />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4" Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <ScrollViewer HorizontalScrollBarVisibility="auto" VerticalScrollBarVisibility="auto">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+            </ItemsControl>
+        </Grid>
+    
+
+
+</UserControl>

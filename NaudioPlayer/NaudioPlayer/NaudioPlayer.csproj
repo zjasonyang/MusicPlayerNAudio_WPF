@@ -109,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\MusicGenreSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MusicPlayControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -136,7 +140,11 @@
     <Compile Include="Models\SelectableDay.cs" />
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\WeeklySchedule.cs" />
+    <Compile Include="ViewModels\MusicGenreSelectViewModel.cs" />
     <Compile Include="ViewModels\WeeklyScheduleWindowViewModel.cs" />
+    <Compile Include="Views\MusicGenreSelect.xaml.cs">
+      <DependentUpon>MusicGenreSelect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MusicPlayControl.xaml.cs">
       <DependentUpon>MusicPlayControl.xaml</DependentUpon>
     </Compile>
@@ -209,7 +217,12 @@
     <Resource Include="Images\stop.png" />
     <Resource Include="Images\volume.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\genre\Electric.png" />
+    <Resource Include="Images\genre\Jazz.png" />
+    <Resource Include="Images\genre\Punk.png" />
+    <Resource Include="Images\genre\Rock.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

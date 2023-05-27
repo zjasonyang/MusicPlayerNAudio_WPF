@@ -1,26 +1,23 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using NAudio.Wave;
+using NaudioPlayer.Annotations;
+using NaudioPlayer.Extensions;
+using NaudioPlayer.Models;
+using NaudioPlayer.Services;
+using NaudioPlayer.Views;
+using NaudioWrapper;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using NaudioPlayer.Annotations;
-using NaudioPlayer.Models;
-using NaudioPlayer.Services;
-using NaudioWrapper;
-using NaudioPlayer.Extensions;
-using System.Timers;
-using System.Windows.Threading;
-using System;
-using NAudio.Wave;
-using NaudioPlayer.Views;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -154,10 +151,6 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
-        //public ObservableCollection<WeeklySchedule> WeeklySchedules { get; set; }
-
-        //public WeeklySchedule SelectedWeeklySchedule { get; set; }
-
         private ObservableCollection<WeeklySchedule> LoadScheduleFromJson()
         {
             if (File.Exists("weeklySchedules.json"))
@@ -196,13 +189,11 @@ namespace NaudioPlayer.ViewModels
         public ICommand DeleteScheduleCommand { get; set; }
         
 
-
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
         {
-            Application.Current.MainWindow.Closing += MainWindow_Closing;
+            //Application.Current.MainWindow.Closing += MainWindow_Closing;
 
             Title = "九太播放器";
             Playlist = new ObservableCollection<Track>();
@@ -217,26 +208,17 @@ namespace NaudioPlayer.ViewModels
                 if (Playlist != null && Playlist.Count > 0)
                 {
                     CurrentlySelectedTrack = Playlist[0]; // 設置第一首歌曲為當前選擇的歌曲
-                    StartPlayback(null); // 開始播放
-                    
+                    StartPlayback(null); // 開始播放   
                 }
             }
-
-
-           
-            Debug.WriteLine(Playlist);
             LoadDefaultPlaylist();
 
 
             _playbackState = PlaybackState.Stopped;
-
-            PlayPauseImageSource = "../Images/play.png";
-
             _timer = new System.Timers.Timer(1000); // 1000 milliseconds or 1 second interval
             _timer.Elapsed += Timer_Elapsed;
             _timer.AutoReset = true;
             LoadCommands();
-
         }
 
         private void UpdateSeekBar()
