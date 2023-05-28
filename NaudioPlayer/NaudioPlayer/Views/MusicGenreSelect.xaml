@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:NaudioPlayer.ViewModels"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="768">
     
@@ -49,7 +50,26 @@
                     </ControlTemplate>
                 </ItemsControl.Template>
             </ItemsControl>
-        </Grid>
+        <Button Grid.Column="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Visibility="{Binding IsScrollButtonVisible}"
+            Command="{Binding ScrollToNextPageCommand}" 
+            Background="Transparent"
+            Foreground="White">
+            <Icon:PackIconMaterial Kind="ChevronRight" Width="40" Height="40"/>
+        </Button>
+
+        <Button Grid.Column="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Visibility="{Binding IsBackScrollButtonVisible}"
+            Command="{Binding ScrollToPreviousPageCommand}" 
+            Background="Transparent"
+            Foreground="White">
+            <Icon:PackIconMaterial Kind="ChevronLeft" Width="40" Height="40"/>
+        </Button>
+    </Grid>
     
 
 

@@ -52,7 +52,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#cfcfcf" />
             <Setter Property="Height" Value="50" />
-            <Setter Property="Margin" Value="30 3 0 3" />
+            <Setter Property="Margin" Value="0 3 0 3" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -60,7 +60,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Border Background="{TemplateBinding Background}" CornerRadius="25">
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="35 0 0 0"/>
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 0 0 0"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
