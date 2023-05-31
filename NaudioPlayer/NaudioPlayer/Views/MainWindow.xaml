@@ -61,7 +61,7 @@
             <!--song list-->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
@@ -104,77 +104,41 @@
                     </StackPanel>
                 </Grid>
 
+                <ListBox ItemsSource="{Binding Playlist}" 
+                         SelectedItem="{Binding CurrentlySelectedTrack}" 
+                         Background="#121212"
+                         Foreground="White"
+                         BorderBrush="Transparent" 
+                         Grid.Column="1">
 
-                <StackPanel Grid.Row="1" Grid.Column="1" Background="White" Margin="0 0 10 10">
-                    <!--<TextBlock Text="九太播放器" Style="{StaticResource titleText}"/>-->
+                    <ListBox.Resources>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Height" Value="30"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#333" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#666" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.Resources>
 
-                    <Border CornerRadius="20" Margin="0 0 0 0">
-                        <Border.Background>
-                            <LinearGradientBrush>
-                                <GradientStop Color="{StaticResource bgcolor3}" Offset="0"/>
-                                <GradientStop Color="{StaticResource bgcolor4}" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding FriendlyName}" Margin="5" Width="200" />
+                                <TextBlock Text="{Binding Number}" Margin="5" Width="50" />
+                                <TextBlock Text="{Binding Time}" Margin="5" Width="50" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
 
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="#1fae7e"/>
-                        </Border.Effect>
-
-                        <!-- music list -->
-                        <StackPanel Margin="30">
-                            <TextBlock Text="正在播放" Foreground="white" FontSize="26" FontWeight="Bold" Margin="0 0 0 10"/>
-                            <ListBox ItemsSource="{Binding Playlist}" 
-                                 SelectedItem="{Binding CurrentlySelectedTrack}"
-                                 Background="Transparent" 
-                                 BorderBrush="Transparent"
-                                 dd:DragDrop.IsDragSource="True"
-                                 dd:DragDrop.IsDropTarget="True"
-                                 MaxHeight="350" >
-                                <ListBox.Template>
-                                    <ControlTemplate TargetType="ListBox">
-                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}">
-                                            <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
-                                                <ItemsPresenter />
-                                            </ScrollViewer>
-                                        </Border>
-                                    </ControlTemplate>
-                                </ListBox.Template>
-                                <ListBox.Resources>
-                                    <Style TargetType="ListBox">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ListBox">
-                                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                                                        BorderThickness="{TemplateBinding BorderThickness}">
-                                                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
-                                                            <ItemsPresenter />
-                                                        </ScrollViewer>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ListBox.Resources>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <uc:SongItem />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                </ListBox>
             </Grid>
-            <!--bottom secton-->
-         
-            <!--left side menu-->
-            
-            
-            <!-- music section -->
-            
-            
-            <!--player section-->
+
             <Grid Grid.Row="3">
                 <uc:MusicPlayControl/>
             </Grid>

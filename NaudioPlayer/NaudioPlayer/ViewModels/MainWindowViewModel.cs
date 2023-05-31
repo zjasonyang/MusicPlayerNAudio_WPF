@@ -212,6 +212,7 @@ namespace NaudioPlayer.ViewModels
                 }
             }
             LoadDefaultPlaylist();
+            Debug.WriteLine("playlist loaded.");
 
 
             _playbackState = PlaybackState.Stopped;
