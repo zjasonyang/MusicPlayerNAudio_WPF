@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="NaudioPlayer.Views.DropDownMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NaudioPlayer.Views"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="768">
+    <Grid>
+        <!--// Menu Border //-->
+        <Border 
+                Background="White"
+                BorderBrush="#363435"
+                BorderThickness="3"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Center"
+                CornerRadius="5" />
+
+            <!--// Menu //-->
+        <Menu Height="30"
+                  Width="758"
+                  Background="#030303"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center">
+
+            <MenuItem Header="新增內容"
+                          Height="30"
+                          Width="120"
+                          FontWeight="Bold"
+                          Style="{StaticResource Services_MenuItem_With_Dropdown}">
+                <MenuItem Header="新增檔案"
+                          Height="30"
+                          Width="120"
+                          Style="{StaticResource Services_Sub_MenuItem}"
+                          Command="{Binding AddFileToPlaylistCommand}" >
+                </MenuItem>
+                <MenuItem Header="新增資料夾"
+                          Height="30"
+                          Width="120"
+                          Style="{StaticResource Services_Sub_MenuItem}"
+                          Command="{Binding AddFolderToPlaylistCommand}" >
+                </MenuItem>
+            </MenuItem>
+
+
+            <MenuItem Header="播放清單"
+                          Height="30"
+                          Width="120"
+                          FontWeight="Bold"
+                          Style="{StaticResource Services_MenuItem_With_Dropdown}">
+                <MenuItem Header="儲存播放清單"
+                          Height="30"
+                          Width="120"
+                          Style="{StaticResource Services_Sub_MenuItem}"
+                          Command="{Binding SavePlaylistCommand}" >
+                </MenuItem>
+                <MenuItem Header="載入播放清單"
+                          Height="30"
+                          Width="120"
+                          Style="{StaticResource Services_Sub_MenuItem}"
+                          Command="{Binding LoadPlaylistCommand}" >
+                </MenuItem>
+                    
+            </MenuItem>
+            <MenuItem Header="排程"
+                          Height="30"
+                          Width="120"
+                          FontWeight="Bold"
+                          Style="{StaticResource Services_MenuItem_With_Dropdown}">
+                <MenuItem Header="顯示排程視窗"
+                          Height="30"
+                          Width="120"
+                          Style="{StaticResource Services_Sub_MenuItem}"
+                          Command="{Binding OpenWeeklyScheduleCommand}" >
+                </MenuItem>
+                
+            </MenuItem>
+        </Menu>
+    </Grid>
+</UserControl>

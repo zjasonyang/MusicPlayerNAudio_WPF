@@ -109,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\DropDownMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MusicGenreSelect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -142,6 +146,9 @@
     <Compile Include="Models\WeeklySchedule.cs" />
     <Compile Include="ViewModels\MusicGenreSelectViewModel.cs" />
     <Compile Include="ViewModels\WeeklyScheduleWindowViewModel.cs" />
+    <Compile Include="Views\DropDownMenu.xaml.cs">
+      <DependentUpon>DropDownMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MusicGenreSelect.xaml.cs">
       <DependentUpon>MusicGenreSelect.xaml</DependentUpon>
     </Compile>
@@ -222,6 +229,12 @@
     <Resource Include="Images\genre\Jazz.png" />
     <Resource Include="Images\genre\Punk.png" />
     <Resource Include="Images\genre\Rock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\EvaIcons-FileAddOutline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\RemixIcon-ArrowDropDownLine.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

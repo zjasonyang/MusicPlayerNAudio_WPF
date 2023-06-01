@@ -29,6 +29,9 @@
             <Grid.RowDefinitions>
                 <!--title-->
                 <RowDefinition Height="50"/>
+                
+                <!--drop down menu-->
+                <RowDefinition Height="50"/>
                 <!--genre-->
                 <RowDefinition Height="200"/>
                 <!--song list-->
@@ -53,93 +56,117 @@
                 </StackPanel>
             </Border>
             
+            <!--drop down menu-->
+
+            <Grid Grid.Row="1">
+                <uc:DropDownMenu/>
+            </Grid>
+            
+            <!--<Grid Grid.Row="1" Margin="0 10 0 0">
+                <StackPanel Orientation="Horizontal">
+                    --><!--add files--><!--
+                    <Button x:Name="AddFilesButton" Content="新增內容">
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="加入檔案" Command="{Binding AddFileToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                                <MenuItem Header="加入資料夾" Command="{Binding AddFolderToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                    --><!--playlist--><!--
+                    <Button x:Name="PlaylistButton" Content="播放清單">
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="儲存播放清單" Command="{Binding SavePlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                                <MenuItem Header="載入播放清單" Command="{Binding LoadPlaylistCommand}" Style="{StaticResource customMenuItem}" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                    --><!--schedule--><!--
+                    <Button x:Name="ScheduleButton" Content="排程">
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="開啟排程視窗" Style="{StaticResource customMenuItem}" Command="{Binding OpenWeeklyScheduleCommand}"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                </StackPanel>
+            </Grid>-->
+
+
             <!--genre-->
-            <Border Grid.Row="1">
+            <Border Grid.Row="2">
                 <uc:MusicGenreSelect/>
             </Border>
-            
+
             <!--song list-->
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <Grid Grid.Column="0" Margin="0 10 0 0">
-                    <StackPanel>
-                        <!--add files-->
-                        <RadioButton x:Name="AddFilesRadioButton"  Style="{StaticResource menuRadioButton}">
-                            <Grid>
-                                <TextBlock Text="新增內容" Margin="0 0 0 2"/>
-                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
-                            </Grid>
-                        </RadioButton>
-                        <StackPanel Visibility="{Binding IsChecked, ElementName=AddFilesRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <MenuItem Header="加入檔案" Command="{Binding AddFileToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
-                            <MenuItem Header="加入資料夾" Command="{Binding AddFolderToPlaylistCommand}" Style="{StaticResource customMenuItem}" />
-                        </StackPanel>
-                        <!--playlist-->
-                        <RadioButton x:Name="PlaylistRadioButton" Style="{StaticResource menuRadioButton}">
-                            <Grid>
-                                <TextBlock Text="播放清單" Margin="0 0 0 2"/>
-                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
-                            </Grid>
-                        </RadioButton>
-                        <StackPanel Visibility="{Binding IsChecked, ElementName=PlaylistRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <MenuItem Header="儲存播放清單" Command="{Binding SavePlaylistCommand}" Style="{StaticResource customMenuItem}" />
-                            <MenuItem Header="載入播放清單" Command="{Binding LoadPlaylistCommand}" Style="{StaticResource customMenuItem}" />
-                        </StackPanel>
-                        <!--schedule-->
-                        <RadioButton x:Name="scheduleRadioButton" Style="{StaticResource menuRadioButton}">
-                            <Grid>
-                                <TextBlock Text="排程" Margin="0 0 0 2"/>
-                                <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
-                            </Grid>
-                        </RadioButton>
-                        <StackPanel Visibility="{Binding IsChecked, ElementName=scheduleRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <MenuItem Header="開啟排程視窗" Style="{StaticResource customMenuItem}" 
-                                          Command="{Binding OpenWeeklyScheduleCommand}"/>
+            <ListView ItemsSource="{Binding Playlist}" 
+          SelectedItem="{Binding CurrentlySelectedTrack}" 
+          Background="#121212"
+          Foreground="White"
+          BorderBrush="Transparent"
+          Grid.Row="3"
+          Grid.Column="0"
+          Padding="0">
 
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
+                <ListView.Resources>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Height" Value="30"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#524E4F" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#363435" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.Resources>
 
-                <ListBox ItemsSource="{Binding Playlist}" 
-                         SelectedItem="{Binding CurrentlySelectedTrack}" 
-                         Background="#121212"
-                         Foreground="White"
-                         BorderBrush="Transparent" 
-                         Grid.Column="1">
+                <ListView.Template>
+                    <ControlTemplate TargetType="ListView">
+                        <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </ListView.Template>
 
-                    <ListBox.Resources>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Height" Value="30"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#333" />
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#666" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListBox.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                <Setter Property="Height" Value="0" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+                        <GridViewColumn Header="Number" DisplayMemberBinding="{Binding Number}" Width="30"/>
+                        <GridViewColumn Header="FriendlyName" DisplayMemberBinding="{Binding FriendlyName}" Width="600"/>
+                        <GridViewColumn Header="Time" Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Time, StringFormat={}{0:mm\\:ss}}"
+                                   HorizontalAlignment="Right"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
 
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding FriendlyName}" Margin="5" Width="200" />
-                                <TextBlock Text="{Binding Number}" Margin="5" Width="50" />
-                                <TextBlock Text="{Binding Time}" Margin="5" Width="50" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
+            </ListView>
 
-                </ListBox>
-            </Grid>
 
-            <Grid Grid.Row="3">
+
+
+
+
+
+            <Grid Grid.Row="4">
                 <uc:MusicPlayControl/>
             </Grid>
         </Grid>
