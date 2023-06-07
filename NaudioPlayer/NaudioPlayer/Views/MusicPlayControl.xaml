@@ -68,19 +68,53 @@
                         <Icon:PackIconMaterial Kind="Shuffle"/>
                     </Button>
                 </StackPanel>
-                <Slider Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0 10 30 10" 
-                        Minimum="0" Maximum="1.0"
-                        Width="100"
-                        Value="{Binding CurrentVolume, Mode=TwoWay}"
-                        x:Name="VolumeSlider">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding VolumeControlValueChangedCommand}"></i:InvokeCommandAction>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Slider>
+
+                <Grid HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 20 30 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Icon:PackIconMaterial Kind="VolumeHigh" 
+                                           Width="15" 
+                                           Height="15" 
+                                           VerticalAlignment="Center" 
+                                           Foreground="Gray" 
+                                           Grid.Column="0" 
+                                           Grid.Row="0"/>
+
+
+                    <Slider Orientation="Horizontal"
+                            Minimum="0" Maximum="1.0"
+                            Width="80"
+                            Value="{Binding CurrentVolume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            x:Name="VolumeSlider"
+                            Style="{StaticResource VolumeSliderStyle}"
+                            Grid.Column="1" 
+                            Grid.Row="0"
+                            Margin="10 5 10 0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="ValueChanged">
+                                <i:InvokeCommandAction Command="{Binding VolumeControlValueChangedCommand}"></i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Slider>
+
+                    <TextBlock Text="{Binding CurrentVolume, StringFormat={}{0:P0}}" 
+                               Margin="10,0,0,0" 
+                               VerticalAlignment="Center" 
+                               Foreground="gray" 
+                               TextAlignment="Center" 
+                               Grid.ColumnSpan="2" 
+                               Grid.Row="1"/>
+                </Grid>
             </Grid>
+
+
 
 
             <!--<Grid Grid.Row="0" Margin="40 0 5 0">

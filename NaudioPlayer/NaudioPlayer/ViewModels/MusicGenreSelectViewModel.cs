@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using NaudioPlayer.Annotations;
+using NaudioPlayer.Extensions;
+using NaudioPlayer.Models;
+using NaudioPlayer.Services;
+using NaudioPlayer.Views;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +16,8 @@ using System.Windows.Input;
 using System.Windows;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.Win32;
+using NaudioPlayer.Services;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -19,16 +26,19 @@ namespace NaudioPlayer.ViewModels
     {
         public string Name { get; set; }
         public ImageSource Image { get; set; }
+        public string PlayListPath { get; set; }
     }
 
     public class MusicGenreSelectViewModel: INotifyPropertyChanged
     {
-        //public ObservableCollection<Genre> Genres { get; set; }
-
         private ObservableCollection<Genre> _genres;
         private int _currentPage = 0;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        //public ICommand LoadPlaylistCommand => MainWindowViewModel.Instance.LoadPlaylistCommand;
+        public ICommand LoadPlaylistCommand => ((MainWindowViewModel)Application.Current.MainWindow.DataContext).LoadPlaylistCommand;
+        //public ObservableCollection<Track> Playlist => MainWindowViewModel.Instance.Playlist;
 
         public ObservableCollection<Genre> Genres
         {
@@ -76,12 +86,15 @@ namespace NaudioPlayer.ViewModels
             canExecute: _ => _currentPage > 0
         );
 
+       
 
         public MusicGenreSelectViewModel()
         {
             Genres = new ObservableCollection<Genre>
             {
-                new Genre { Name = "Jazz", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Jazz.png", UriKind.Absolute)) },
+                new Genre { Name = "Jazz", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Jazz.png", UriKind.Absolute)), 
+                            PlayListPath = @"C:\test3.playlist" },
+                            
                 new Genre { Name = "Punk", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Punk.png", UriKind.Absolute)) },
                 new Genre { Name = "Rock", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Rock.png", UriKind.Absolute)) },
                 new Genre { Name = "Electric", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Electric.png", UriKind.Absolute)) },
@@ -90,6 +103,12 @@ namespace NaudioPlayer.ViewModels
             };
         }
 
+        //private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
+        //{
+        //    return new ObservableCollection<T>(collection);
+        //}
+
+        // Play
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

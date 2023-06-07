@@ -23,6 +23,9 @@ namespace NaudioPlayer.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        // 建立一個 singleton 
+        private static MainWindowViewModel instance = null;
+
         private enum PlaybackState
         {
             Playing, Stopped, Paused
@@ -221,6 +224,19 @@ namespace NaudioPlayer.ViewModels
             _timer.AutoReset = true;
             LoadCommands();
         }
+
+        public static MainWindowViewModel Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new MainWindowViewModel();
+                }
+                return instance;
+            }
+        }
+
 
         private void UpdateSeekBar()
         {
@@ -440,16 +456,8 @@ namespace NaudioPlayer.ViewModels
 
         private void LoadPlaylist(object p)
         {
-            //var ofd = new OpenFileDialog();
-
-            //ofd.Filter = "PLAYLIST files (*.playlist) | *.playlist";
-            //if (ofd.ShowDialog() == true)
-            //{
-            //    Playlist = ToObservableCollection(new PlaylistLoader().Load(ofd.FileName));
-            //}
-
             string filePath = p as string;
-
+            Console.WriteLine(p);
             if (filePath == null)
             {
                 var ofd = new OpenFileDialog();
@@ -460,9 +468,22 @@ namespace NaudioPlayer.ViewModels
                 }
             }
 
-            if (filePath != null && File.Exists(filePath))
+            if (filePath == null)
             {
-                Playlist = ToObservableCollection(new PlaylistLoader().Load(filePath));
+                Console.WriteLine("File path is null");
+            }
+            else if (!File.Exists(filePath))
+            {
+                Console.WriteLine($"File does not exist: {filePath}");
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Playlist = ToObservableCollection(new PlaylistLoader().Load(filePath));
+                });
+                Console.WriteLine($"Successfully loaded {p} playlist");
+                Console.WriteLine("Playlist count after loading: " + Playlist.Count);
             }
         }
 

@@ -22,6 +22,12 @@
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
+    
+    <Window.Resources>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+    </Window.Resources>
 
     <Border Background="#030303" CornerRadius="20" >
         <!--global layout-->
@@ -29,7 +35,6 @@
             <Grid.RowDefinitions>
                 <!--title-->
                 <RowDefinition Height="50"/>
-                
                 <!--drop down menu-->
                 <RowDefinition Height="50"/>
                 <!--genre-->
@@ -100,14 +105,112 @@
             </Border>
 
             <!--song list-->
-            <ListView ItemsSource="{Binding Playlist}" 
-          SelectedItem="{Binding CurrentlySelectedTrack}" 
-          Background="#121212"
-          Foreground="White"
-          BorderBrush="Transparent"
-          Grid.Row="3"
-          Grid.Column="0"
-          Padding="0">
+            <DataGrid ItemsSource="{Binding Playlist, Mode=OneWay}" 
+                      SelectedItem="{Binding CurrentlySelectedTrack}" 
+                      PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      Background="#121212"
+                      Foreground="White"
+                      BorderBrush="Transparent"
+                      Grid.Row="3"
+                      Grid.Column="0"
+                      
+                      HeadersVisibility="None"
+                      AutoGenerateColumns="False"
+                      HorizontalAlignment="Left"
+                      GridLinesVisibility="None"
+                      FontFamily="Quicksand"
+                      FontSize="14"
+                      FontWeight="Regular"
+                      Margin="10 0 10 0">
+                <DataGrid.Resources>
+                    
+                    <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
+                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                        <Setter Property="OverridesDefaultStyle" Value="true" />
+                        <Setter Property="IsTabStop" Value="false" />
+                        <Setter Property="Focusable" Value="false" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Thumb}">
+                                    <Border CornerRadius="2"
+                                            Background="#535353"
+                                            BorderBrush="#030303"
+                                            BorderThickness="1" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    
+                    <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+                        <Grid Width="10">
+                            <!-- 將寬度設定為你想要的值 -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition MaxHeight="18" />
+                                <RowDefinition Height="0.00001*" />
+                                <RowDefinition MaxHeight="18" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.RowSpan="3" CornerRadius="2" Background="#030303"/>
+                            <Track x:Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+
+                    <Style x:Key="ScrollBarStyle" TargetType="{x:Type ScrollBar}">
+                        <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+                    </Style>
+                    
+                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ScrollBarStyle}" />
+
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Height" Value="30"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#524E4F" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#363435" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                </DataGrid.Resources>
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Number" Binding="{Binding Number}" Width="30">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="FriendlyName" Binding="{Binding FriendlyName}" Width="618" />
+                    <DataGridTextColumn Header="Time" Binding="{Binding Time, StringFormat={}{0:mm\\:ss}}" Width="70">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!--<ListView ItemsSource="{Binding Playlist}" 
+                      SelectedItem="{Binding CurrentlySelectedTrack}" 
+                      Background="#121212"
+                      Foreground="White"
+                      BorderBrush="Transparent"
+                      Grid.Row="3"
+                      Grid.Column="0"
+                      Padding="0">
 
                 <ListView.Resources>
                     <Style TargetType="ListViewItem">
@@ -127,8 +230,8 @@
                 <ListView.Template>
                     <ControlTemplate TargetType="ListView">
                         <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">    
                             <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                               VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter />
@@ -146,7 +249,13 @@
                             </Style>
                         </GridView.ColumnHeaderContainerStyle>
                         <GridViewColumn Header="Number" DisplayMemberBinding="{Binding Number}" Width="30"/>
-                        <GridViewColumn Header="FriendlyName" DisplayMemberBinding="{Binding FriendlyName}" Width="600"/>
+                        <GridViewColumn Header="FriendlyName" Width="600">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FriendlyName}" TextAlignment="Right"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Header="Time" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -158,7 +267,7 @@
                     </GridView>
                 </ListView.View>
 
-            </ListView>
+            </ListView>-->
 
 
 

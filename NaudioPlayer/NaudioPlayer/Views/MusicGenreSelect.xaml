@@ -13,60 +13,71 @@
     </UserControl.DataContext>
     
         <Grid Background="#030303">
-            <ItemsControl ItemsSource="{Binding Genres}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Width="172" Height="172" Margin="5 0 5 0 " Background="#030303">
-                            <Image Source="{Binding Image}" 
-                               Width="172" 
-                               Height="172" 
-                               Stretch="UniformToFill" 
-                               >
-                                <Image.Clip>
-                                    <RectangleGeometry Rect="0,0,172,172" RadiusX="20" RadiusY="20"/>
-                                </Image.Clip>
-                            </Image>
-                            <TextBlock Text="{Binding Name}" 
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center" 
-                                   FontWeight="Bold"
-                                   Foreground="white"
-                                   FontSize="30"
-                                   FontFamily="Consolas"
-                                   />
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="4" Rows="1"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.Template>
-                    <ControlTemplate>
-                        <ScrollViewer HorizontalScrollBarVisibility="auto" VerticalScrollBarVisibility="auto">
-                            <ItemsPresenter />
-                        </ScrollViewer>
-                    </ControlTemplate>
-                </ItemsControl.Template>
-            </ItemsControl>
+        <ItemsControl ItemsSource="{Binding Genres}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button 
+                            Width="172" Height="172" Margin="5 0 5 0 " Background="#030303"
+                            Command="{Binding DataContext.LoadPlaylistCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                            CommandParameter="{Binding PlayListPath}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <Image Source="{Binding Image}" 
+                                       Width="172" 
+                                       Height="172" 
+                                       Stretch="UniformToFill">
+                                        <Image.Clip>
+                                            <RectangleGeometry Rect="0,0,172,172" RadiusX="20" RadiusY="20"/>
+                                        </Image.Clip>
+                                    </Image>
+                                    <TextBlock Text="{Binding Name}" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" 
+                                           FontWeight="Bold"
+                                           Foreground="white"
+                                           FontSize="30"
+                                           FontFamily="Consolas" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="4" Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer HorizontalScrollBarVisibility="auto" VerticalScrollBarVisibility="auto">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+        </ItemsControl>
+
+
         <Button Grid.Column="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center"
-            Visibility="{Binding IsScrollButtonVisible}"
-            Command="{Binding ScrollToNextPageCommand}" 
-            Background="Transparent"
-            Foreground="White">
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Visibility="{Binding IsScrollButtonVisible}"
+                Command="{Binding ScrollToNextPageCommand}" 
+                BorderThickness="0"
+                Background="Transparent"
+                Foreground="White">
             <Icon:PackIconMaterial Kind="ChevronRight" Width="40" Height="40"/>
         </Button>
 
         <Button Grid.Column="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Visibility="{Binding IsBackScrollButtonVisible}"
-            Command="{Binding ScrollToPreviousPageCommand}" 
-            Background="Transparent"
-            Foreground="White">
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Visibility="{Binding IsBackScrollButtonVisible}"
+                Command="{Binding ScrollToPreviousPageCommand}"
+                BorderThickness="0"
+                Background="Transparent"
+                Foreground="White">
             <Icon:PackIconMaterial Kind="ChevronLeft" Width="40" Height="40"/>
         </Button>
     </Grid>
