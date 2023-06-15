@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NAudio.Wave;
 
 namespace NaudioWrapper
@@ -157,6 +158,28 @@ namespace NaudioWrapper
             {
                 _audioFileReader.Volume = value;
             }
+        }
+
+        public void VolumeFade(float targetVolume, int fadeDurationMilliseconds)
+        {
+            // 我們需要使用一個新的線程來進行淡出操作，以避免阻塞主線程
+            new Thread(() =>
+            {
+                float startVolume = _audioFileReader.Volume;
+
+                float deltaVolume = targetVolume - startVolume;
+                int fadeSteps = fadeDurationMilliseconds / 50; // 我們每 50ms 調整一次音量
+                float volumeStep = deltaVolume / fadeSteps;
+
+                for (int i = 0; i < fadeSteps; i++)
+                {
+                    _audioFileReader.Volume += volumeStep;
+                    Thread.Sleep(50);
+                }
+
+                _audioFileReader.Volume = targetVolume; // 確保最後的音量達到目標音量
+
+            }).Start();
         }
     }
 }

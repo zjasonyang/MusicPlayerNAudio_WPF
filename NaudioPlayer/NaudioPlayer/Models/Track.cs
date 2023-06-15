@@ -72,6 +72,15 @@ namespace NaudioPlayer.Models
             Time = time;
         }
 
+        public Track(string filepath)
+        {
+            Filepath = filepath;
+            FriendlyName = "插播項目";  // 或者可以用檔案名稱作為 FriendlyName
+            Number = 0;  // 或者其他合理的預設值
+            Time = TimeSpan.Zero;  // 或者其他合理的預設值
+        }
+
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

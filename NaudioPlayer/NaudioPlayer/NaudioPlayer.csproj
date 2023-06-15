@@ -113,6 +113,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\InterludeSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MusicGenreSelect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -144,10 +148,14 @@
     <Compile Include="Models\SelectableDay.cs" />
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\WeeklySchedule.cs" />
+    <Compile Include="ViewModels\InterludeSettingsViewModel.cs" />
     <Compile Include="ViewModels\MusicGenreSelectViewModel.cs" />
     <Compile Include="ViewModels\WeeklyScheduleWindowViewModel.cs" />
     <Compile Include="Views\DropDownMenu.xaml.cs">
       <DependentUpon>DropDownMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InterludeSettingsWindow.xaml.cs">
+      <DependentUpon>InterludeSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MusicGenreSelect.xaml.cs">
       <DependentUpon>MusicGenreSelect.xaml</DependentUpon>

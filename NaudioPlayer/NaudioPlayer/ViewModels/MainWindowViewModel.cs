@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 
@@ -38,8 +39,25 @@ namespace NaudioPlayer.ViewModels
 
         private Track _currentlyPlayingTrack;
         private Track _currentlySelectedTrack;
+
         private AudioPlayer _audioPlayer;
-        private System.Timers.Timer _timer;
+        //獨立開插播的 player
+        private AudioPlayer _interludePlayer;
+
+        private Timer _timer;
+        private Timer _interludeTimer;
+
+        private InterludeSettingsViewModel _interludeSettings;
+        
+        private List<Track> _interludeTracks;
+        private int _interludeIndex;
+
+
+        private Track _savedTrack;
+        private double _savedTrackPosition;
+
+
+
 
         private string _title;
         private double _currentTrackLenght;
@@ -186,6 +204,7 @@ namespace NaudioPlayer.ViewModels
         public ICommand MuteUnmuteCommand { get; set; }
 
         public ICommand OpenWeeklyScheduleCommand { get; private set; }
+        public ICommand OpenInterludeSettingsCommand { get; private set; }
 
         public ICommand AddScheduleCommand { get; set; }
         public ICommand EditScheduleCommand { get; set; }
@@ -196,32 +215,29 @@ namespace NaudioPlayer.ViewModels
 
         public MainWindowViewModel()
         {
-            //Application.Current.MainWindow.Closing += MainWindow_Closing;
 
             Title = "九太播放器";
             Playlist = new ObservableCollection<Track>();
-
+            //LoadPlaylist(@"_playlist\default.playlist");
+            Debug.WriteLine("constructor initial playlsit : " + Playlist.Count);   
+          
             string playlistPath = GetPlaylistPathForCurrentTime();
+            LoadPlaylist(@"_playlist\default.playlist");
+            StartPlayback(null);
 
-            if (!string.IsNullOrEmpty(playlistPath))
-            {
-                LoadPlaylist(playlistPath);
-                //開始播放
-                Debug.WriteLine("playlist.count = " + Playlist.Count);
-                if (Playlist != null && Playlist.Count > 0)
-                {
-                    CurrentlySelectedTrack = Playlist[0]; // 設置第一首歌曲為當前選擇的歌曲
-                    StartPlayback(null); // 開始播放   
-                }
-            }
-            LoadDefaultPlaylist();
-            Debug.WriteLine("playlist loaded.");
+            _interludeSettings = new InterludeSettingsViewModel(this);
+            
 
 
             _playbackState = PlaybackState.Stopped;
             _timer = new System.Timers.Timer(1000); // 1000 milliseconds or 1 second interval
             _timer.Elapsed += Timer_Elapsed;
             _timer.AutoReset = true;
+
+            _interludeTimer = new System.Timers.Timer(10000); // 10 秒
+            _interludeTimer.AutoReset = false; // 我們不希望定時器自動重置
+            _interludeTimer.Elapsed += InterludeTimer_Elapsed; // 綁定事件處理器
+
             LoadCommands();
         }
 
@@ -236,6 +252,8 @@ namespace NaudioPlayer.ViewModels
                 return instance;
             }
         }
+
+
 
 
         private void UpdateSeekBar()
@@ -262,15 +280,15 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (_audioPlayer != null)
-            {
-                UpdateSeekBar();
-                CurrentTrackPosition = _audioPlayer.GetPositionInSeconds();
-                Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
-            }
-        }
+        //private void Timer_Tick(object sender, EventArgs e)
+        //{
+        //    if (_audioPlayer != null)
+        //    {
+        //        UpdateSeekBar();
+        //        CurrentTrackPosition = _audioPlayer.GetPositionInSeconds();
+        //        Console.WriteLine($"Timer tick at {DateTime.Now}, position: {CurrentTrackPosition}");
+        //    }
+        //}
 
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -282,17 +300,36 @@ namespace NaudioPlayer.ViewModels
         }
 
 
+
         private void _audioPlayer_PlaybackStopped()
         {
             _playbackState = PlaybackState.Stopped;
             PlayPauseImageSource = "../Images/play.png";
             CommandManager.InvalidateRequerySuggested();
-            CurrentTrackPosition = 0;
-            
+
             if (_audioPlayer.PlaybackStopType == AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile)
             {
-                CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
-                StartPlayback(null);
+                // 檢查是否正在播放插播音樂
+                if (CurrentlyPlayingTrack == _interludeTracks[_interludeIndex])
+                {
+                    _interludeIndex = (_interludeIndex + 1) % _interludeTracks.Count; // 更新插播音樂的索引
+                    if (_interludeIndex == 0) // 如果所有的插播音樂都已經播放過，則回到原來的音樂
+                    {
+                        CurrentlySelectedTrack = _savedTrack;
+                        StartPlayback(null);
+                        _audioPlayer.SetPosition(_savedTrackPosition);
+                    }
+                    else // 否則，播放下一首插播音樂
+                    {
+                        CurrentlySelectedTrack = _interludeTracks[_interludeIndex];
+                        StartPlayback(null);
+                    }
+                }
+                else // 如果不是在播放插播音樂，則按照原來的邏輯進行
+                {
+                    CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
+                    StartPlayback(null);
+                }
             }
             else if (_audioPlayer.PlaybackStopType == AudioPlayer.PlaybackStopTypes.PlaybackStoppedByUser)
             {
@@ -340,10 +377,59 @@ namespace NaudioPlayer.ViewModels
 
             // Schedule commands
             OpenWeeklyScheduleCommand = new RelayCommand(OpenWeeklySchedule, CanOpenWeeklySchedule);
+            OpenInterludeSettingsCommand = new RelayCommand(OpenInterludeSettings,CanOpenInterLudeSettings);
             //AddScheduleCommand = new RelayCommand(AddSchedule);
             //EditScheduleCommand = new RelayCommand(WeeklySchedule => EditSchedule(WeeklySchedule), WeeklySchedule => WeeklySchedule != null);
             //DeleteScheduleCommand = new RelayCommand<WeeklySchedule>(DeleteSchedule);
         }
+
+         // 插播音軌 ( 廣告 )
+        private void InterludeTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // 保存當前播放的音樂和播放位置，然後開始播放插播音樂
+            _savedTrack = CurrentlyPlayingTrack;
+            _savedTrackPosition = CurrentTrackPosition;
+            //兩秒淡出
+            _audioPlayer.VolumeFade(0.0f, 2000);
+            _audioPlayer.Pause();
+
+
+            if (_interludeSettings.InterludeFilePaths.Count > 0)
+            {
+                string interludeTrackPath = _interludeSettings.InterludeFilePaths[0];  // 使用插播列表中的第一个文件
+                _interludePlayer = new AudioPlayer(interludeTrackPath, CurrentVolume);
+                _interludePlayer.PlaybackStopped += InterludePlayer_PlaybackStopped;
+                _interludePlayer.Play(NAudio.Wave.PlaybackState.Paused, 1.0f);
+            }
+        }
+
+        private void InterludePlayer_PlaybackStopped()
+        {
+            _interludePlayer.Dispose();
+            _interludePlayer = null;
+            CurrentlyPlayingTrack = _savedTrack;
+            _audioPlayer.Play(NAudio.Wave.PlaybackState.Playing, CurrentVolume);
+            _audioPlayer.SetPosition(_savedTrackPosition);
+        }
+
+
+        public void ApplyInterludeSettings()
+        {
+            // 更新_timer 和 _interludeTracks
+            _interludeTimer = new System.Timers.Timer(_interludeSettings.InterludeInterval);
+            _interludeTimer.Elapsed += InterludeTimer_Elapsed;
+            _interludeTimer.AutoReset = true;
+          
+            _interludeTracks = _interludeSettings.InterludeFilePaths.Select(path => new Track(path)).ToList();
+            _interludeIndex = 0;
+
+            if (_interludePlayer != null)
+            {
+                _interludePlayer.Dispose();
+            }
+        }
+
+
 
         // Menu commands
         private void ExitApplication(object p)
@@ -426,7 +512,6 @@ namespace NaudioPlayer.ViewModels
                 Playlist = new ObservableCollection<Track>(Playlist.OrderBy(z => z.Number).ToList());
             }
         }
-
         private bool CanAddFolderToPlaylist(object p)
         {
             if (_playbackState == PlaybackState.Stopped)
@@ -448,16 +533,17 @@ namespace NaudioPlayer.ViewModels
                 ps.Save(Playlist, sfd.FileName);
             }
         }
-
         private bool CanSavePlaylist(object p)
         {
             return true;
         }
 
-        private void LoadPlaylist(object p)
+        private void LoadPlaylist(object filePathObj = null)
         {
-            string filePath = p as string;
-            Console.WriteLine(p);
+            string filePath = filePathObj as string;
+
+            Console.WriteLine(filePath);
+
             if (filePath == null)
             {
                 var ofd = new OpenFileDialog();
@@ -482,17 +568,10 @@ namespace NaudioPlayer.ViewModels
                 {
                     Playlist = ToObservableCollection(new PlaylistLoader().Load(filePath));
                 });
-                Console.WriteLine($"Successfully loaded {p} playlist");
+                Console.WriteLine($"Successfully loaded {filePath} playlist");
                 Console.WriteLine("Playlist count after loading: " + Playlist.Count);
             }
         }
-
-        private void LoadDefaultPlaylist()
-        {
-            string defaultPlaylistPath = "_playlist/default.playlist"; 
-            LoadPlaylist(defaultPlaylistPath);
-        }
-
         private bool CanLoadPlaylist(object p)
         {
             return true;
@@ -524,8 +603,6 @@ namespace NaudioPlayer.ViewModels
             return null;
         }
 
-        
-
         private void OpenWeeklySchedule(object obj)
         {
             var weeklyScheduleWindow = new WeeklyScheduleWindow();
@@ -536,6 +613,19 @@ namespace NaudioPlayer.ViewModels
             return true;
         }
 
+
+        private void OpenInterludeSettings(object obj)
+        {
+            // Create an instance of InterludeSettingsWindow
+            var settingsWindow = new InterludeSettingsWindow(_interludeSettings);
+
+            // Show the InterludeSettingsWindow
+            settingsWindow.ShowDialog();
+        }
+        private bool CanOpenInterLudeSettings(object obj)
+        {
+            return true;
+        }
 
         private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
         {
@@ -581,32 +671,30 @@ namespace NaudioPlayer.ViewModels
                 CurrentlyPlayingTrack = CurrentlySelectedTrack;
             }
 
+            // If the audio player is not initialized, we can't toggle play/pause
+            if (_audioPlayer == null) return;
+
+            if (_interludePlayer != null)
+            {
+                _interludePlayer.PlaybackStopped -= InterludePlayer_PlaybackStopped;  // 注意这里修改了方法的名称
+                _interludePlayer.Dispose();
+                _interludePlayer = null;
+            }
+
+            // We should use InterludeFilePaths list here
+            if (_interludeSettings.InterludeFilePaths.Count > 0)
+            {
+                string interludeTrackPath = _interludeSettings.InterludeFilePaths[0];  // 使用插播列表中的第一个文件
+                _interludePlayer = new AudioPlayer(interludeTrackPath, CurrentVolume);
+                _interludePlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
+                _interludePlayer.PlaybackStopped += InterludePlayer_PlaybackStopped;  // 注意这里修改了方法的名称
+            }
+
             // Toggle play/pause for the current audio player
             _audioPlayer.TogglePlayPause(CurrentVolume);
             _timer.Start(); // Start updating the position
+            _interludeTimer.Start();
         }
-
-        //private void StartPlayback(object p)
-        //{
-        //    if (CurrentlySelectedTrack != null)
-        //    {
-        //        if (_playbackState == PlaybackState.Stopped)
-        //        {
-        //            _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
-        //            _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-        //            _audioPlayer.PlaybackPaused += _audioPlayer_PlaybackPaused;
-        //            _audioPlayer.PlaybackResumed += _audioPlayer_PlaybackResumed;
-        //            _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
-        //            CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
-        //            CurrentlyPlayingTrack = CurrentlySelectedTrack;
-        //        }
-        //        if (CurrentlySelectedTrack == CurrentlyPlayingTrack)
-        //        {
-        //            _audioPlayer.TogglePlayPause(CurrentVolume);
-        //        }
-        //    }
-        //}
-
         private bool CanStartPlayback(object p)
         {
             if (CurrentlySelectedTrack != null)
@@ -732,7 +820,7 @@ namespace NaudioPlayer.ViewModels
         }
 
         
-
+        
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

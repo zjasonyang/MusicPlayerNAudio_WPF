@@ -74,7 +74,12 @@
                           Style="{StaticResource Services_Sub_MenuItem}"
                           Command="{Binding OpenWeeklyScheduleCommand}" >
                 </MenuItem>
-                
+                <MenuItem Header="插播設定"
+                          Height="30"
+                          Width="120"
+                          Style="{StaticResource Services_Sub_MenuItem}"
+                          Command="{Binding OpenInterludeSettingsCommand}" >
+                </MenuItem>  
             </MenuItem>
         </Menu>
     </Grid>
