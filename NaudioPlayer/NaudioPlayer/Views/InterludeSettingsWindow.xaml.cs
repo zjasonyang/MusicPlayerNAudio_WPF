@@ -24,5 +24,11 @@ namespace NaudioPlayer.Views
             // Set the data context for this window to the provided ViewModel.
             DataContext = viewModel;
         }
+
+        private void Windows_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                this.DragMove();
+        }
     }
 }

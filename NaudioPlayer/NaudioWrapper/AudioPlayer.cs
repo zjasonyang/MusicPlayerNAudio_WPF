@@ -46,7 +46,7 @@ namespace NaudioWrapper
             _audioFileReader.Volume = (float) currentVolumeLevel;
 
             if (PlaybackResumed != null)
-            {
+            { 
                 PlaybackResumed();
             }
         }

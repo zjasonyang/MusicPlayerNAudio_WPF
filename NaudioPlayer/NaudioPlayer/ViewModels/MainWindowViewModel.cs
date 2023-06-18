@@ -405,11 +405,12 @@ namespace NaudioPlayer.ViewModels
 
         private void InterludePlayer_PlaybackStopped()
         {
+            
             _interludePlayer.Dispose();
             _interludePlayer = null;
             CurrentlyPlayingTrack = _savedTrack;
-            _audioPlayer.Play(NAudio.Wave.PlaybackState.Playing, CurrentVolume);
             _audioPlayer.SetPosition(_savedTrackPosition);
+            _audioPlayer.Play(NAudio.Wave.PlaybackState.Paused, 1.0f);
         }
 
 

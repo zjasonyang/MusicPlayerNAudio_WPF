@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -16,8 +17,11 @@ namespace NaudioPlayer.ViewModels
     {
         private MainWindowViewModel _mainWindowViewModel;
 
-        private List<string> _interludeFilePaths;
-        public List<string> InterludeFilePaths
+        //private List<string> _interludeFilePaths;
+        //public List<string> InterludeFilePaths
+
+        private ObservableCollection<string> _interludeFilePaths;
+        public ObservableCollection<string> InterludeFilePaths
         {
             get { return _interludeFilePaths; }
             set
@@ -29,6 +33,9 @@ namespace NaudioPlayer.ViewModels
                 }
             }
         }
+
+
+
 
         private double _interludeInterval;
         public double InterludeInterval
@@ -52,6 +59,7 @@ namespace NaudioPlayer.ViewModels
         public ICommand RemoveTrackCommand { get; private set; }
 
         public ICommand ApplySettingsCommand { get; private set; }
+        public ICommand CloseWindowCommand { get; private set; }
 
 
         public InterludeSettingsViewModel(MainWindowViewModel mainWindowViewModel)
@@ -59,11 +67,12 @@ namespace NaudioPlayer.ViewModels
             _mainWindowViewModel = mainWindowViewModel;
 
             _interludeInterval = 1000;  // 初始化为1000毫秒
-            _interludeFilePaths = new List<string>();  // 初始化為空列表
+            _interludeFilePaths = new ObservableCollection<string>();  // 初始化為空列表
 
             AddTrackCommand = new RelayCommand(AddTrack, _ => true);
             RemoveTrackCommand = new RelayCommand(RemoveTrack, _ => true);
             ApplySettingsCommand = new RelayCommand(ApplySettings, _ => true);
+            CloseWindowCommand = new RelayCommand(CloseWindow, _ => true);
         }
 
         private void AddTrack(object obj)
@@ -108,6 +117,13 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
+        private void CloseWindow(object obj)
+        {
+            if(obj is Window window)
+            {
+                window.Close();
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
