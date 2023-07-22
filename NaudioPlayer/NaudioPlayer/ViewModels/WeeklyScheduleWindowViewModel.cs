@@ -130,7 +130,6 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
     private void LoadAvailablePlaylists()
     {
         AvailablePlaylists = new ObservableCollection<string>();
-        Debug.WriteLine($"Current working directory: {Directory.GetCurrentDirectory()}");
 
         // #手動設定 playlist 資料夾路徑
         string playlistFolderPath = "./_playlist"; 
@@ -142,7 +141,6 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
             {
                 string playlistName = Path.GetFileNameWithoutExtension(playlistFile);
                 AvailablePlaylists.Add(playlistName);
-                Debug.WriteLine($"Found playlist: {playlistName}");
             }
         }
     }
@@ -176,7 +174,6 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
         if (File.Exists("weeklySchedules.json"))
         {
             string json = File.ReadAllText("weeklySchedules.json");
-            Debug.WriteLine(json);
             return JsonConvert.DeserializeObject<ObservableCollection<WeeklySchedule>>(json);
         }
         return null;

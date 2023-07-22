@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Interlude Settings" 
-        Height="500" Width="500"
+        Height="450" Width="500"
         AllowsTransparency="True"
         WindowStyle="None"
         Background="Transparent"
@@ -17,97 +17,100 @@
         <Grid>
             <Grid.RowDefinitions>
                 <!--title--> 
-                <RowDefinition Height="50" />
+                <RowDefinition Height="40" />
                 <!--menu-->
                 <RowDefinition Height="50" />
                 <!--插播清單-->
                 <RowDefinition Height="300" />
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
 
             <!--title-->
             <Border Background="#030303" CornerRadius="20 20 0 0 " Grid.RowSpan="1">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="20 10 0 10">
-                    <Button Background="Transparent" BorderBrush="Transparent" Command="{Binding CloseWindowCommand}">
-                        <Ellipse Fill="#ff6258" Width="15" Height="15"/>
-                    </Button>
-                 </StackPanel>
+                <Button Background="Transparent" BorderBrush="Transparent" 
+                        Command="{Binding CloseWindowCommand}" 
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Ellipse Fill="#ff6258" Width="15" Height="15"/>
+                </Button>
+            </StackPanel>
             </Border>
-
-            <Grid Grid.Row="1" Background="#030303">
-                <!--// Menu Border //-->
-                
-                <Menu Height="30"
-                      Width="500"
-                      Background="#030303"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Center">
-                    <MenuItem Header="選單"
-                              Width="120"
-                              Height="30"
-                              FontWeight="Bold"
-                              Style="{StaticResource Services_MenuItem_With_Dropdown}">
-                        <MenuItem Header="加入插播檔案"
-                                      Width="120"
-                                      Height="30"
-                                      FontWeight="Bold"
-                                      Style="{StaticResource Services_Sub_MenuItem}"/>
-                        
-                        <MenuItem Header="移除插播檔案"
-                                      Width="120"
-                                      Height="30"
-                                      FontWeight="Bold"
-                                      Style="{StaticResource Services_Sub_MenuItem}"/>
-
-
-                </MenuItem>
-                </Menu>
-            </Grid>
-
-       
             
-            <!--menu-->
-            <!--<Grid Grid.Row="2">
-                <Menu Height="50"
-                      Background="#030303"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Left" Width="500">>
+            <!--// Menu Border //-->
+            <Grid Grid.Row="1" Background="#030303">
+                <Menu Height="30"
+                          Width="500"
+                          Background="#030303"
+                          VerticalAlignment="Center"
+                          HorizontalAlignment="Center">
                     <MenuItem Header="選單"
-                              Width="120"
-                              Height="50"
-                              FontWeight="Bold"
-                              
-                              Style="{StaticResource Services_MenuItem_With_Dropdown}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="6,0,6,0">
-                        <MenuItem Header="加入檔案"
                                   Width="120"
                                   Height="30"
                                   FontWeight="Bold"
-                                  Style="{StaticResource Services_Sub_MenuItem}"
-                                  Command="{Binding AddTrackCommand}">
-                        </MenuItem>
-                        <MenuItem Header="移除檔案"
-                                  Width="120"
-                                  Height="30"
-                                  FontWeight="Bold"
-                                  Style="{StaticResource Services_Sub_MenuItem}"
-                                  Command="{Binding RemoveTrackCommand}">
-                        </MenuItem>
+                                  Style="{StaticResource Services_MenuItem_With_Dropdown}">
+                        <MenuItem Header="加入插播檔案"
+                                          Width="120"
+                                          Height="30"
+                                          FontWeight="Bold"
+                                          Style="{StaticResource Services_Sub_MenuItem}"
+                                          Command="{Binding AddTrackCommand}"/>
+
+                        <MenuItem Header="移除插播檔案"
+                                          Width="120"
+                                          Height="30"
+                                          FontWeight="Bold"
+                                          Style="{StaticResource Services_Sub_MenuItem}"
+                                          Command="{Binding RemoveTrackCommand}"/>
                     </MenuItem>
                 </Menu>
-            </Grid>-->
+            </Grid>
             
-            <Label Grid.Row="3" Content="Interlude Interval (ms):" />
-            <TextBox Text="{Binding InterludeInterval, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="1" />
-            <!--<ListBox ItemsSource="{Binding InterludeFilePaths}" Grid.Row="1" Grid.ColumnSpan="2" />-->
-            <StackPanel Orientation="Horizontal" Grid.Row="3">
-                <Button Content="Add Track" Command="{Binding AddTrackCommand}" />
-                <Button Content="Remove Track" Command="{Binding RemoveTrackCommand}" />
+            <!--<插入檔案-->
+            <Grid Grid.Row="2" Background="#030303">
+                <ListBox ItemsSource="{Binding InterludeFileNames}"
+                 SelectedItem="{Binding SelectedTrack}"
+                 Margin="5"
+                 Background="#030303"
+                 Foreground="White"
+                 BorderBrush="Transparent">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <!-- 設定字體大小為20 -->
+                        </Style>
+                </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
 
-                <Button Content="Apply settings" Command="{Binding ApplySettingsCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-            </StackPanel>
-
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="插播時間間隔(分鐘) : " 
+                   Background="#030303"
+                   Foreground="white"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   Height="30"
+                   Grid.Column="0"/>
+            <TextBox Text="{Binding InterludeIntervalMinutes, UpdateSourceTrigger=PropertyChanged}" 
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Grid.Column="1" />
+            <Button Content="套用設定" Command="{Binding ApplySettingsCommand}" 
+                    Width="120"
+                    Background="#030303"
+                    Foreground="White"
+                    Grid.Column="2" />
         </Grid>
+
+
+        <!--<Label Grid.Row="3" Content="Interlude Interval (ms):" />
+        <TextBox Text="{Binding InterludeInterval, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" Grid.Column="1" />-->
+    </Grid>
 
     
 </Window>

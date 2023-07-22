@@ -86,27 +86,67 @@ namespace NaudioPlayer.ViewModels
             canExecute: _ => _currentPage > 0
         );
 
-       
+
+
+        //public MusicGenreSelectViewModel()
+        //{
+        //    Genres = new ObservableCollection<Genre>
+        //    {
+        //        new Genre { Name = "Jazz",
+        //                    //Image = new BitmapImage(new Uri(@"_images\genre\Jazz.png", UriKind.Relative)),
+        //                    Image = new BitmapImage(new Uri("_images/genre/Jazz.png", UriKind.Relative)),
+        //                    PlayListPath = @"_playlist/test3.playlist" },
+
+        //        new Genre { Name = "Punk", Image = new BitmapImage(new Uri(@"_images\genre\Punk.png", UriKind.Relative)) },
+        //        new Genre { Name = "Rock", Image = new BitmapImage(new Uri(@"_images\genre\Rock.png", UriKind.Relative)) },
+        //        new Genre { Name = "Electric", Image = new BitmapImage(new Uri(@"_images\genre\Electric.png", UriKind.Relative)) },
+        //        new Genre { Name = "Pop", Image = new BitmapImage(new Uri(@"_images\genre\Pop.png", UriKind.Relative)) },
+        //        // Other genres...
+        //    };
+        //}
 
         public MusicGenreSelectViewModel()
         {
+            string appDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
             Genres = new ObservableCollection<Genre>
-            {
-                new Genre { Name = "Jazz", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Jazz.png", UriKind.Absolute)), 
-                            PlayListPath = @"C:\test3.playlist" },
-                            
-                new Genre { Name = "Punk", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Punk.png", UriKind.Absolute)) },
-                new Genre { Name = "Rock", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Rock.png", UriKind.Absolute)) },
-                new Genre { Name = "Electric", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Electric.png", UriKind.Absolute)) },
-                new Genre { Name = "Pop", Image = new BitmapImage(new Uri(@"C:\Users\Jason Yang\source\repos\NaudioPlayer\NaudioPlayer\NaudioPlayer\Images\genre\Pop.png", UriKind.Absolute)) },
-                // Other genres...
-            };
+    {
+        new Genre { Name = "Jazz",
+                    Image = LoadImage(GetImagePath(appDir, "Resources/Images/genre/Jazz.png")),
+                    PlayListPath = GetImagePath(appDir, "Resources/Playlist/Jazz.playlist")},
+
+        new Genre { Name = "Punk", 
+                    Image = LoadImage(GetImagePath(appDir, "Resources/Images/genre/Punk.png")),
+                    PlayListPath = GetImagePath(appDir, "Resources/Playlist/Punk.playlist")},
+
+        new Genre { Name = "Rock",
+                    Image = LoadImage(GetImagePath(appDir, "Resources/Images/genre/Rock.png")),
+                    PlayListPath = GetImagePath(appDir, "Resources/Playlist/Rock.playlist")},
+
+        new Genre { Name = "Electric", 
+                    Image = LoadImage(GetImagePath(appDir, "Resources/Images/genre/Electric.png")),
+                    PlayListPath = GetImagePath(appDir, "Resources/Playlist/Electric.playlist")},
+
+        new Genre { Name = "Pop", 
+                    Image = LoadImage(GetImagePath(appDir, "Resources/Images/genre/Pop.png")),
+                    PlayListPath = GetImagePath(appDir, "Resources/Playlist/Pop.playlist")},
+        // Other genres...
+    };
         }
 
-        //private ObservableCollection<T> ToObservableCollection<T>(ICollection<T> collection)
-        //{
-        //    return new ObservableCollection<T>(collection);
-        //}
+        private string GetImagePath(string baseDir, string relativePath)
+        {
+            return System.IO.Path.Combine(baseDir, relativePath);
+        }
+
+        private BitmapImage LoadImage(string path)
+        {
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(path);
+            image.EndInit();
+            return image;
+        }
 
         // Play
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

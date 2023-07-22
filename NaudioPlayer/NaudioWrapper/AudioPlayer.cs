@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using NAudio.Wave;
 
@@ -21,9 +22,34 @@ namespace NaudioWrapper
         public event Action PlaybackStopped;
         public event Action PlaybackPaused;
 
+        //public AudioPlayer(string filepath, float volume)
+        //{
+        //    PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
+
+        //    _audioFileReader = new AudioFileReader(filepath) { Volume = volume };
+
+        //    _output = new DirectSoundOut(200);
+        //    _output.PlaybackStopped += _output_PlaybackStopped;
+
+        //    var wc = new WaveChannel32(_audioFileReader);
+        //    wc.PadWithZeroes = false;
+
+        //    _output.Init(wc);
+        //}
+
+        //修改為相對路徑
         public AudioPlayer(string filepath, float volume)
         {
             PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
+
+            if (Path.IsPathRooted(filepath))
+            {
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                Uri baseUri = new Uri(basePath);
+                Uri fullUri = new Uri(filepath);
+                Uri relativeUri = baseUri.MakeRelativeUri(fullUri);
+                filepath = Uri.UnescapeDataString(relativeUri.ToString());
+            }
 
             _audioFileReader = new AudioFileReader(filepath) { Volume = volume };
 
@@ -38,13 +64,15 @@ namespace NaudioWrapper
 
         public void Play(PlaybackState playbackState, double currentVolumeLevel)
         {
+            if (_output == null || _audioFileReader == null) return;
+
             if (playbackState == PlaybackState.Stopped || playbackState == PlaybackState.Paused)
             {
                 _output.Play();
             }
 
             _audioFileReader.Volume = (float) currentVolumeLevel;
-
+            
             if (PlaybackResumed != null)
             { 
                 PlaybackResumed();
@@ -108,6 +136,7 @@ namespace NaudioWrapper
                 {
                     _output.Stop();
                 }
+
                 _output.Dispose();
                 _output = null;
             }

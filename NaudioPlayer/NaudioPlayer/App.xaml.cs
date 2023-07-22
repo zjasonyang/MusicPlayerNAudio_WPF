@@ -13,5 +13,7 @@ namespace NaudioPlayer
     /// </summary>
     public partial class App : Application
     {
+
     }
+
 }

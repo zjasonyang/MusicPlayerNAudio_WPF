@@ -34,7 +34,19 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
-
+        private ObservableCollection<string> _interludeFileNames;
+        public ObservableCollection<string> InterludeFileNames
+        {
+            get { return _interludeFileNames; }
+            set
+            {
+                if (_interludeFileNames != value)
+                {
+                    _interludeFileNames = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
 
         private double _interludeInterval;
@@ -55,6 +67,40 @@ namespace NaudioPlayer.ViewModels
             }
         }
 
+        private double _interludeIntervalMinutes;
+        public double InterludeIntervalMinutes
+        {
+            get { return _interludeInterval / 60000; } // 1 minute = 60000 milliseconds
+            set
+            {
+                if (_interludeIntervalMinutes != value)
+                {
+                    _interludeIntervalMinutes = value;
+                    _interludeInterval = value * 60000; // convert minutes back to milliseconds
+                    OnPropertyChanged(nameof(InterludeIntervalMinutes));
+                    OnPropertyChanged(nameof(InterludeInterval));
+                }
+            }
+        }
+
+        private string _selectedTrack;
+        public string SelectedTrack
+        {
+            get { return _selectedTrack; }
+            set
+            {
+                if (_selectedTrack != value)
+                {
+                    _selectedTrack = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public List<TimeSpan> InterludeTimes { get; set; } // For specific time interludes
+        public int InterludeAfterXSongs { get; set; } // For track-count-based interludes
+
+
         public ICommand AddTrackCommand { get; private set; }
         public ICommand RemoveTrackCommand { get; private set; }
 
@@ -66,8 +112,9 @@ namespace NaudioPlayer.ViewModels
         {
             _mainWindowViewModel = mainWindowViewModel;
 
-            _interludeInterval = 1000;  // 初始化为1000毫秒
+            _interludeInterval = 30000;  // 初始化为30秒
             _interludeFilePaths = new ObservableCollection<string>();  // 初始化為空列表
+            _interludeFileNames = new ObservableCollection<string>();
 
             AddTrackCommand = new RelayCommand(AddTrack, _ => true);
             RemoveTrackCommand = new RelayCommand(RemoveTrack, _ => true);
@@ -83,20 +130,27 @@ namespace NaudioPlayer.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 _interludeFilePaths.Add(openFileDialog.FileName);
-                OnPropertyChanged(nameof(InterludeFilePaths)); // Trigger the property changed event
+                _interludeFileNames.Add(System.IO.Path.GetFileName(openFileDialog.FileName));
+                OnPropertyChanged(nameof(InterludeFilePaths));
+                OnPropertyChanged(nameof(InterludeFileNames)); // Don't forget to notify changes
             }
         }
+
 
         private void RemoveTrack(object obj)
         {
-            string selectedTrack = obj as string;
+            string selectedTrack = SelectedTrack;
 
             if (selectedTrack != null && _interludeFilePaths.Contains(selectedTrack))
             {
+                int index = _interludeFilePaths.IndexOf(selectedTrack);
                 _interludeFilePaths.Remove(selectedTrack);
-                OnPropertyChanged(nameof(InterludeFilePaths)); // Trigger the property changed event
+                _interludeFileNames.RemoveAt(index); // remove the corresponding filename
+                OnPropertyChanged(nameof(InterludeFilePaths));
+                OnPropertyChanged(nameof(InterludeFileNames)); // Don't forget to notify changes
             }
         }
+
 
         private void ApplySettings(object obj)
         {
@@ -104,7 +158,7 @@ namespace NaudioPlayer.ViewModels
             _mainWindowViewModel.ApplyInterludeSettings();
 
             // Prepare the message to display
-            var message = $"載入成功!\n插播檔案：\n{string.Join("\n", InterludeFilePaths)}\n插播間隔時間：{InterludeInterval} 毫秒";
+            var message = $"載入成功!\n插播檔案：\n{string.Join("\n", InterludeFilePaths)}\n插播間隔時間：{InterludeIntervalMinutes} 分鐘";
 
             // Show the message box
             MessageBox.Show(message, "設定已載入", MessageBoxButton.OK, MessageBoxImage.Information);

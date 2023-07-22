@@ -204,12 +204,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="_playlist\default.playlist">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="_playlist\test1.playlist" />
-    <None Include="_playlist\test2.playlist" />
-    <None Include="_playlist\test3.playlist" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -224,25 +218,13 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\pause.png" />
-    <Resource Include="Images\play.png" />
-    <Resource Include="Images\shuffle.png" />
-    <Resource Include="Images\skip_next.png" />
-    <Resource Include="Images\skip_previous.png" />
-    <Resource Include="Images\stop.png" />
-    <Resource Include="Images\volume.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\genre\Electric.png" />
-    <Resource Include="Images\genre\Jazz.png" />
-    <Resource Include="Images\genre\Punk.png" />
-    <Resource Include="Images\genre\Rock.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\EvaIcons-FileAddOutline.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\RemixIcon-ArrowDropDownLine.png" />
+    <Content Include="Resources\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\Images\Material-TrashCanOutline_gray.png" />
+    <Resource Include="Resources\Images\Material-TrashCanOutline.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

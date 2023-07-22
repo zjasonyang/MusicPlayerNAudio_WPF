@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using NaudioPlayer.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -33,6 +34,17 @@ namespace NaudioPlayer
                 row.IsSelected = true;
             }
         }
+
+        private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                var vm = (MainWindowViewModel)DataContext;
+                vm.DeleteTrackCommand.Execute(((DataGrid)sender).SelectedItem);
+            }
+        }
+
+
 
     }
 }

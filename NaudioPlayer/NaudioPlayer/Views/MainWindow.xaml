@@ -75,6 +75,7 @@
             <!--song list-->
             <DataGrid ItemsSource="{Binding Playlist, Mode=OneWay}" 
                       SelectedItem="{Binding CurrentlySelectedTrack}" 
+                      PreviewKeyDown="DataGrid_PreviewKeyDown"
                       PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
                       IsReadOnly="True"
                       SelectionMode="Single"
@@ -92,6 +93,8 @@
                       FontSize="14"
                       FontWeight="Regular"
                       Margin="10 0 10 0">
+                
+                
                 <DataGrid.Resources>
                     
                     <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
@@ -151,7 +154,22 @@
                 </DataGrid.Resources>
                 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Number" Binding="{Binding Number}" Width="30">
+                    <DataGridTemplateColumn Width="30">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Delete"
+                                        Command="{Binding DataContext.DeleteTrackCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}">
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Image Source="/NaudioPlayer;component/Resources/Images/Material-TrashCanOutline_gray.png" Height="15" Width="15" />
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Number" Binding="{Binding Number}" Width="60">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -159,7 +177,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="FriendlyName" Binding="{Binding FriendlyName}" Width="618" />
+                    <DataGridTextColumn Header="FriendlyName" Binding="{Binding FriendlyName}" Width="570" />
                     <DataGridTextColumn Header="Time" Binding="{Binding Time, StringFormat={}{0:mm\\:ss}}" Width="70">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
