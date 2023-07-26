@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using NAudio.Wave;
@@ -64,32 +65,38 @@ namespace NaudioWrapper
 
         public void Play(PlaybackState playbackState, double currentVolumeLevel)
         {
+            Debug.WriteLine("Play() method called");
             if (_output == null || _audioFileReader == null) return;
 
             if (playbackState == PlaybackState.Stopped || playbackState == PlaybackState.Paused)
             {
+                Debug.WriteLine("Starting playback...");
                 _output.Play();
             }
 
             _audioFileReader.Volume = (float) currentVolumeLevel;
             
             if (PlaybackResumed != null)
-            { 
+            {
+                Debug.WriteLine("Raising PlaybackResumed event...");
                 PlaybackResumed();
             }
         }
 
         private void _output_PlaybackStopped(object sender, StoppedEventArgs e)
         {
+            Debug.WriteLine("_output_PlaybackStopped event handler called");
             Dispose();
             if (PlaybackStopped != null)
             {
+                Debug.WriteLine("Raising PlaybackStopped event...");
                 PlaybackStopped();
             }
         }
 
         public void Stop()
         {
+            Debug.WriteLine("Stop() method called");
             if (_output != null)
             {
                 _output.Stop();
@@ -98,12 +105,14 @@ namespace NaudioWrapper
 
         public void Pause()
         {
+            Debug.WriteLine("Pause() method called");
             if (_output != null)
             {
                 _output.Pause();
 
                 if (PlaybackPaused != null)
                 {
+                    Debug.WriteLine("Raising PlaybackPaused event...");
                     PlaybackPaused();
                 }
             }
@@ -111,19 +120,23 @@ namespace NaudioWrapper
 
         public void TogglePlayPause(double currentVolumeLevel)
         {
+            Debug.WriteLine("TogglePlayPause() method called");
             if (_output != null)
             {
                 if (_output.PlaybackState == PlaybackState.Playing)
                 {
+                    Debug.WriteLine("Pausing playback...");
                     Pause();
                 }
                 else
                 {
+                    Debug.WriteLine("Resuming playback...");
                     Play(_output.PlaybackState, currentVolumeLevel);
                 }
             }
             else
             {
+                Debug.WriteLine("Starting playback...");
                 Play(PlaybackState.Stopped, currentVolumeLevel);
             }
         }
@@ -142,7 +155,16 @@ namespace NaudioWrapper
             }
             if (_audioFileReader != null)
             {
-                _audioFileReader.Dispose();
+                //_audioFileReader.Dispose();
+                //_audioFileReader = null;
+                try
+                {
+                    _audioFileReader.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Exception when disposing _audioFileReader: " + ex.ToString());
+                }
                 _audioFileReader = null;
             }
         }
