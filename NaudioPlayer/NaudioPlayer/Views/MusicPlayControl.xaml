@@ -62,7 +62,7 @@
                     <Button Width="30" Height="30" Margin="5" Command="{Binding RewindToStartCommand}" Style="{StaticResource playerButton}" >
                         <Icon:PackIconMaterial Kind="SkipPrevious" />
                     </Button>
-                    <Button Width="60" Height="60" Margin="10" Command="{Binding StartPlaybackCommand}" Style="{StaticResource playerButton}" >
+                    <Button Width="60" Height="60" Margin="10" Command="{Binding PlayPauseCommand}" Style="{StaticResource playerButton}" >
                         <Icon:PackIconMaterial Kind="PlayPause" Width="40" Height="40"/>
                     </Button>
                     <Button Width="30" Height="30" Margin="5" Command="{Binding ForwardToEndCommand}" Style="{StaticResource playerButton}" >
@@ -76,7 +76,7 @@
                             <Style TargetType="Button">
                                 <Setter Property="Background" Value="#363435"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsInterludeEnabled}" Value="True">
+                                    <DataTrigger Binding="{Binding IsInterludeEnabled}" Value="false">
                                         <Setter Property="Background" Value="White"/>
                                     </DataTrigger>
                                 </Style.Triggers>

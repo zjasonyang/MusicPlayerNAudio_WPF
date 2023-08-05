@@ -4,113 +4,233 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:vm="clr-namespace:NaudioPlayer.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Interlude Settings" 
-        Height="450" Width="500"
+        Height="550" Width="500"
         AllowsTransparency="True"
         WindowStyle="None"
         Background="Transparent"
         MouseDown="Windows_MouseDown">
-  
-    
-    
-        <Grid>
-            <Grid.RowDefinitions>
-                <!--title--> 
-                <RowDefinition Height="40" />
-                <!--menu-->
-                <RowDefinition Height="50" />
-                <!--插播清單-->
-                <RowDefinition Height="300" />
-                <RowDefinition Height="30"/>
-            </Grid.RowDefinitions>
-
+    <Grid Background="#030303">
+        <Grid.RowDefinitions>
             <!--title-->
-            <Border Background="#030303" CornerRadius="20 20 0 0 " Grid.RowSpan="1">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="20 10 0 10">
+            <RowDefinition Height="40" />
+            <!--menu-->
+            <RowDefinition Height="50" />
+            <!--插播清單-->
+            <RowDefinition Height="340" />
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="100" />
+        </Grid.RowDefinitions>
+
+        <!--title-->
+        <Border Background="#030303" CornerRadius="20 20 0 0 " Grid.RowSpan="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="20 10 0 10">
                 <Button Background="Transparent" BorderBrush="Transparent" 
                         Command="{Binding CloseWindowCommand}" 
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
                     <Ellipse Fill="#ff6258" Width="15" Height="15"/>
                 </Button>
             </StackPanel>
-            </Border>
-            
-            <!--// Menu Border //-->
-            <Grid Grid.Row="1" Background="#030303">
-                <Menu Height="30"
-                          Width="500"
-                          Background="#030303"
-                          VerticalAlignment="Center"
-                          HorizontalAlignment="Center">
-                    <MenuItem Header="選單"
-                                  Width="120"
-                                  Height="30"
-                                  FontWeight="Bold"
-                                  Style="{StaticResource Services_MenuItem_With_Dropdown}">
-                        <MenuItem Header="加入插播檔案"
-                                          Width="120"
-                                          Height="30"
-                                          FontWeight="Bold"
-                                          Style="{StaticResource Services_Sub_MenuItem}"
-                                          Command="{Binding AddTrackCommand}"/>
+        </Border>
 
-                        <MenuItem Header="移除插播檔案"
-                                          Width="120"
-                                          Height="30"
-                                          FontWeight="Bold"
-                                          Style="{StaticResource Services_Sub_MenuItem}"
-                                          Command="{Binding RemoveTrackCommand}"/>
-                    </MenuItem>
-                </Menu>
-            </Grid>
-            
-            <!--<插入檔案-->
-            <Grid Grid.Row="2" Background="#030303">
-                <ListBox ItemsSource="{Binding InterludeFileNames}"
-                 SelectedItem="{Binding SelectedTrack}"
-                 Margin="5"
-                 Background="#030303"
-                 Foreground="White"
-                 BorderBrush="Transparent">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="FontSize" Value="14"/>
-                            <!-- 設定字體大小為20 -->
-                        </Style>
+        <!--// Menu Border //-->
+        <Grid Grid.Row="1" Background="#030303">
+            <Menu Height="30"
+                  Width="500"
+                  Background="#030303"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center">
+                <MenuItem Header="選單"
+                          Width="120"
+                          Height="30"
+                          FontWeight="Bold"
+                          Style="{StaticResource Services_MenuItem_With_Dropdown}">
+                    <MenuItem Header="加入插播檔案"
+                              Width="120"
+                              Height="30"
+                              FontWeight="Bold"
+                              Style="{StaticResource Services_Sub_MenuItem}"
+                              Command="{Binding AddTrackCommand}"/>
+                    <MenuItem Header="移除插播檔案"
+                              Width="120"
+                              Height="30"
+                              FontWeight="Bold"
+                              Style="{StaticResource Services_Sub_MenuItem}"
+                              Command="{Binding RemoveTrackCommand}"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
+
+        <!--<插入檔案-->
+        <Grid Grid.Row="2" >
+            <ListBox ItemsSource="{Binding InterludeFileNames}"
+                     SelectedItem="{Binding SelectedTrack}"
+                     Margin="5"
+                     Background="#030303"
+                     Foreground="White"
+                     BorderBrush="Transparent">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="FontSize" Value="14"/>
+                        <!-- 設定字體大小為20 -->
+                    </Style>
                 </ListBox.ItemContainerStyle>
-                </ListBox>
-            </Grid>
+            </ListBox>
+        </Grid>
 
-        <Grid Grid.Row="3">
+        <!--插播 固定間隔 時間-->
+        <Grid Grid.Row="3" Background="#030303">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300" />
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Label Content="插播時間間隔(分鐘) : " 
+            <CheckBox IsChecked="{Binding IsInterludeTimeIntervalEnabled, Mode=TwoWay}" 
+                      Width="30"
+                      Height="30"
+                      VerticalContentAlignment="Center"
+                      HorizontalContentAlignment="Center"
+                      Grid.Column="0"
+                      />
+            <Label Content="插播時間間隔(分鐘) : "        
+                   Foreground="white"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   Height="30"
+                   Grid.Column="1"/>
+            <TextBox Text="{Binding InterludeIntervalMinutes, UpdateSourceTrigger=PropertyChanged}" 
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Grid.Column="2" />
+            <Button Content="開始計時" 
+                    Command="{Binding StartTimerCommand}"
+                    Width="100" 
+                    Background="#030303"
+                    Foreground="White"
+                    Grid.Column="3"/>
+            <Label Content="{Binding ProgressValue}"
+                   ContentStringFormat="{}{0} (秒鐘)"
                    Background="#030303"
                    Foreground="white"
                    HorizontalContentAlignment="Center"
                    VerticalContentAlignment="Center"
                    Height="30"
-                   Grid.Column="0"/>
-            <TextBox Text="{Binding InterludeIntervalMinutes, UpdateSourceTrigger=PropertyChanged}" 
+                   Grid.Column="4"/>    
+            
+            
+        </Grid>
+        <!--插播 固定間隔 歌曲數-->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <!-- Interlude After X Songs -->
+            <CheckBox IsChecked="{Binding IsInterludeAfterXSongsEnabled, Mode=TwoWay}" 
+                      Width="30"
+                      Height="30"
+                      VerticalContentAlignment="Center"
+                      HorizontalContentAlignment="Center"
+                      Grid.Column="0"
+                      />
+            <Label Content="插播歌曲間隔(首歌) : " 
+                   Background="#030303"
+                   Foreground="white"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   Height="30"
+                   Grid.Column="1"/>
+            <TextBox Text="{Binding InterludeAfterXSongs, UpdateSourceTrigger=PropertyChanged}" 
                      HorizontalContentAlignment="Center"
                      VerticalContentAlignment="Center"
-                     Grid.Column="1" />
+                     Grid.Column="2" />
+        </Grid>
+        <Grid Grid.Row="5" Height="60">
             <Button Content="套用設定" Command="{Binding ApplySettingsCommand}" 
-                    Width="120"
+                    FontSize="30"          
+                    Height="60"
                     Background="#030303"
                     Foreground="White"
-                    Grid.Column="2" />
+                    VerticalAlignment="Center"
+                    />
         </Grid>
 
+        <!--插播 特定時間--><!-- 
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            --><!-- Specific Interlude Times --><!--
+            <Label Content="Specific Interlude Times:" 
+           Background="#030303"
+           Foreground="white"
+           HorizontalContentAlignment="Center"
+           VerticalContentAlignment="Center"
+           Height="30"
+           Grid.Column="0"/>
+            <ListBox ItemsSource="{Binding InterludeTimes}" 
+             SelectedItem="{Binding SelectedTime}"
+             Margin="5"
+             Background="#030303"
+             Foreground="White"
+             BorderBrush="Transparent"
+             Grid.Column="1">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding StringFormat=hh\\:mm}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <xctk:TimePicker 
+        Grid.Column="2"
+        Format="Custom" FormatString="hh:mm tt" Value="{Binding SelectedTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="Add" 
+            Command="{Binding AddScheduleTimeCommand}"
+            Width="50"
+            Background="#030303"
+            Foreground="White"
+            Grid.Column="3" />
+            <Button Content="Remove" 
+            Command="{Binding RemoveScheduleTimeCommand}"
+            Width="50"
+            Background="#030303"
+            Foreground="White"
+            Grid.Column="4" />
+        </Grid>-->
 
-        <!--<Label Grid.Row="3" Content="Interlude Interval (ms):" />
-        <TextBox Text="{Binding InterludeInterval, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" Grid.Column="1" />-->
+        <!--插播時間列表--><!-- 
+        <Grid Grid.Row="6">
+            <ListBox ItemsSource="{Binding InterludeTimes}"
+         SelectedItem="{Binding SelectedTime}"
+         Margin="5"
+         Background="#030303"
+         Foreground="White"
+         BorderBrush="Transparent"
+         Grid.Column="1">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding StringFormat=hh\\:mm}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+
+        </Grid>-->
+        
+        
+
     </Grid>
-
-    
 </Window>
