@@ -20,6 +20,7 @@ using System.Timers;
 using System.Windows;
 
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace NaudioPlayer.ViewModels
 {
@@ -319,7 +320,8 @@ namespace NaudioPlayer.ViewModels
         // 用來更新UI 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if(!_isPlayingInterlude && _interludeSettings.InterludeFilePaths.Count > 0 && ShouldPlayInterlude())
+            
+            if (!_isPlayingInterlude && _isInterludeTimeIntervalEnabled && _interludeSettings.InterludeFilePaths.Count > 0 && ShouldPlayInterlude())
             {
                 PlayInterlude();
             }
@@ -367,41 +369,24 @@ namespace NaudioPlayer.ViewModels
 
             if (_audioPlayer.PlaybackStopType == AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile)
             {
-                if (IsInterludeEnabled && !_isPlayingInterlude && _songsPlayedSinceLastInterlude >= _interludeSettings.InterludeAfterXSongs)
+                if (_isPlayingInterlude)
                 {
-                    /*_songsPlayedSinceLastInterlude = 0*/;
+                    _isPlayingInterlude = false; // Reset here after an interlude finishes playing
+                    PlayNextSong();
+                }
+                else if (IsInterludeEnabled && _songsPlayedSinceLastInterlude >= _interludeSettings.InterludeAfterXSongs)
+                {
                     PlayInterlude();
                 }
                 else
                 {
-                    CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
-                    Debug.WriteLine(" currently selected track: " + CurrentlySelectedTrack.FriendlyName);
-
-                    // Unsubscribe here
-                    if (_audioPlayer != null)
-                    {
-                        _audioPlayer.PlaybackStopped -= _audioPlayer_PlaybackStopped;
-                    }
-
-                    //_isPlayingInterlude = false;
-
-                    // Re-initialize _audioPlayer with the new track
-                    _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
-                    _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
-
-                    CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
-                    CurrentlyPlayingTrack = CurrentlySelectedTrack;
-
-                    // Start playing the new track
-                    _audioPlayer.Play(NAudio.Wave.PlaybackState.Stopped, CurrentVolume);
-                    _playbackState = PlaybackState.Playing;
-
-                    _songsPlayedSinceLastInterlude++;
+                    PlayNextSong();
                 }
             }
+
             else if (_audioPlayer.PlaybackStopType == AudioPlayer.PlaybackStopTypes.PlaybackStoppedByUser)
             {
-                // Unsubscribe here
+                // Unsubscribe from the event
                 if (_audioPlayer != null)
                 {
                     _audioPlayer.PlaybackStopped -= _audioPlayer_PlaybackStopped;
@@ -415,6 +400,29 @@ namespace NaudioPlayer.ViewModels
                 _audioPlayer.Play(NAudio.Wave.PlaybackState.Stopped, CurrentVolume);
                 _playbackState = PlaybackState.Playing;
             }
+        }
+
+        private void PlayNextSong()
+        {
+            CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
+            Debug.WriteLine(" currently selected track: " + CurrentlySelectedTrack.FriendlyName);
+
+            if (_audioPlayer != null)
+            {
+                _audioPlayer.PlaybackStopped -= _audioPlayer_PlaybackStopped; // Unsubscribe
+                _audioPlayer.Dispose();
+            }
+
+            _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
+            _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
+
+            CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
+            CurrentlyPlayingTrack = CurrentlySelectedTrack;
+
+            _audioPlayer.Play(NAudio.Wave.PlaybackState.Stopped, CurrentVolume);
+            _playbackState = PlaybackState.Playing;
+
+            _songsPlayedSinceLastInterlude++;
         }
 
         private void _audioPlayer_PlaybackResumed()
@@ -500,16 +508,6 @@ namespace NaudioPlayer.ViewModels
                 }
             }
 
-            //if (_interludeSettings.IsInterludeTimeIntervalEnabled)
-            //{
-            //    if (_interludeInterval != null && DateTime.Now - _lastInterludePlayedTime >= _interludeInterval)
-            //    {
-            //        Debug.WriteLine("every x minutes passed.");
-            //        return true;
-            //    }
-            //}
-
-
             // Check if it's time to play an interlude based on the fixed times
             if (_interludeTimes != null && _interludeTimes.Contains(DateTime.Now.TimeOfDay))
             {
@@ -566,7 +564,9 @@ namespace NaudioPlayer.ViewModels
 
             // Start playback of the interlude track
             _audioPlayer.Play(NAudio.Wave.PlaybackState.Stopped, CurrentVolume);
-            _isPlayingInterlude = true;
+
+            // after play interlude, set flag back to false
+            _isPlayingInterlude = false;
 
             _playbackState = PlaybackState.Playing;
 
@@ -750,6 +750,26 @@ namespace NaudioPlayer.ViewModels
         }
 
         // Schedule command
+        private void InitializeScheduleChecking()
+        {
+            // Create a timer that fires every minute
+            _scheduleCheckTimer = new DispatcherTimer();
+            _scheduleCheckTimer.Interval = TimeSpan.FromMinutes(1);
+            _scheduleCheckTimer.Tick += CheckActiveSchedule;
+            _scheduleCheckTimer.Start();
+        }
+
+        private void CheckActiveSchedule(object sender, EventArgs e)
+        {
+            string playlistPath = GetPlaylistPathForCurrentTime();
+
+            // Check if the playlist is different from the currently loaded playlist
+            if (playlistPath != null && playlistPath != _currentPlaylistPath)
+            {
+                LoadPlaylist(playlistPath);
+                _currentPlaylistPath = playlistPath; // Store the current playlist path
+            }
+        }
 
         private string GetPlaylistPathForCurrentTime()
         {
@@ -877,52 +897,6 @@ namespace NaudioPlayer.ViewModels
                 
             }
         }
-
-
-
-        //private void StartPlayback(object p)
-        //{
-        //    Debug.WriteLine("StartPlayback() was called from " + new StackTrace());
-        //    Debug.WriteLine("_playbackState: " + _playbackState);
-        //    if (_playbackState == PlaybackState.Playing || _isPlayingInterlude)
-        //    {
-        //        return;
-        //    }
-
-        //    // Only dispose of the old AudioPlayer and create a new one if we're starting a new track
-        //    if (CurrentlyPlayingTrack != CurrentlySelectedTrack || _playbackState == PlaybackState.Stopped || _audioPlayer == null || _playbackState == PlaybackState.Paused)
-        //    {
-        //        if (_audioPlayer != null)
-        //        {
-        //            _audioPlayer.Dispose();
-        //            _audioPlayer = null;
-        //        }
-
-        //        // Create a new audio player for the selected track
-        //        _audioPlayer = new AudioPlayer(CurrentlySelectedTrack.Filepath, CurrentVolume);
-        //        _audioPlayer.PlaybackStopType = AudioPlayer.PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-        //        _audioPlayer.PlaybackPaused += _audioPlayer_PlaybackPaused;
-        //        _audioPlayer.PlaybackResumed += _audioPlayer_PlaybackResumed;
-        //        _audioPlayer.PlaybackStopped += _audioPlayer_PlaybackStopped;
-
-        //        // Update the currently playing track
-        //        CurrentlyPlayingTrack = CurrentlySelectedTrack;
-        //        CurrentTrackLenght = _audioPlayer.GetLenghtInSeconds();
-        //        Debug.WriteLine("currentlyPlaying track : " + CurrentlyPlayingTrack.FriendlyName);
-        //    }
-
-        //    // Start playback
-        //    _audioPlayer.Play(NAudio.Wave.PlaybackState.Paused, CurrentVolume);
-
-        //    // Update the playback state
-        //    _playbackState = PlaybackState.Playing;
-        //    Debug.WriteLine("Updated _playbackState: " + _playbackState);
-
-
-        //    _timer.Start();
-        //}
-
-
         private bool CanStartPlayback(object p)
         {
             if (CurrentlySelectedTrack != null)

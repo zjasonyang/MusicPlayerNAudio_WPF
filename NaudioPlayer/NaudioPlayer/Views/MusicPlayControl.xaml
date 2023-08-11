@@ -74,10 +74,10 @@
                     <Button Width="30" Height="30" Margin="5" Command="{Binding ToggleInterludeCommand}"  >
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#363435"/>
+                                <Setter Property="Background" Value="White"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsInterludeEnabled}" Value="false">
-                                        <Setter Property="Background" Value="White"/>
+                                    <DataTrigger Binding="{Binding IsInterludeEnabled}" Value="true">
+                                        <Setter Property="Background" Value="#363435"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
