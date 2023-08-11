@@ -95,6 +95,7 @@ namespace NaudioPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+        private bool _isPlayingInterlude;
 
         private bool _isPlayingInterlude;
 
@@ -424,6 +425,9 @@ namespace NaudioPlayer.ViewModels
 
             _songsPlayedSinceLastInterlude++;
         }
+
+
+
 
         private void _audioPlayer_PlaybackResumed()
         {
@@ -928,6 +932,30 @@ namespace NaudioPlayer.ViewModels
                 return true;
             }
             return false;
+        }
+
+        private void PausePlayback(object p)
+        {
+            if (_audioPlayer != null)
+            {
+                _audioPlayer.Pause();
+                _playbackState = PlaybackState.Paused;
+            }
+        }
+
+        private void PlayPause(object p)
+        {
+            if (_playbackState == PlaybackState.Playing)
+            {
+                PausePlayback(p);
+            }
+            else if (_playbackState == PlaybackState.Paused || _playbackState == PlaybackState.Stopped)
+            {
+                if (CurrentlySelectedTrack != null)
+                {
+                    StartPlayback(p);
+                }
+            }
         }
 
         private void PausePlayback(object p)
