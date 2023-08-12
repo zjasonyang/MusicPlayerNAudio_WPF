@@ -46,6 +46,7 @@ namespace NaudioPlayer.ViewModels
         private AudioPlayer _interludePlayer;
 
         private Timer _timer;
+        private Timer _checkScheduleTimer;
 
         private InterludeSettingsViewModel _interludeSettings;
         private TimeSpan _interludeInterval;
@@ -57,6 +58,7 @@ namespace NaudioPlayer.ViewModels
 
         private bool _isInterludeAfterXSongsEnabled;
         private bool _isInterludeTimeIntervalEnabled;
+
         //for debug
         private string _interludeCountdown;
         public string InterludeCountdown
@@ -71,7 +73,6 @@ namespace NaudioPlayer.ViewModels
         private int shouldInterludeCalled;
 
         private int _interludeIndex;
-
 
         private Track _savedTrack;
         private double _savedTrackPosition;
@@ -95,8 +96,6 @@ namespace NaudioPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
-        private bool _isPlayingInterlude;
-
         private bool _isPlayingInterlude;
 
         public string Title
@@ -290,6 +289,11 @@ namespace NaudioPlayer.ViewModels
             _interludeSettings = new InterludeSettingsViewModel(this);
             Debug.WriteLine(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this));
 
+            _checkScheduleTimer = new System.Timers.Timer();
+            _checkScheduleTimer.Interval = 60000; // Check every minute
+            _checkScheduleTimer.Elapsed += ScheduleTimer_Elapsed;
+            _checkScheduleTimer.Start();
+
 
             _interludeSettings.SettingsApplied += ApplyInterludeSettings;
             _interludeTimes = new List<TimeSpan>();
@@ -405,8 +409,19 @@ namespace NaudioPlayer.ViewModels
 
         private void PlayNextSong()
         {
-            CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
-            Debug.WriteLine(" currently selected track: " + CurrentlySelectedTrack.FriendlyName);
+            // Check if the currently playing track is part of the current playlist
+            if (!Playlist.Contains(CurrentlyPlayingTrack))
+            {
+                // If not, start playing from the first track of the new playlist
+                CurrentlySelectedTrack = Playlist[0];
+            }
+            else
+            {
+                // If yes, play the next track in the current playlist
+                CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
+            }
+            //CurrentlySelectedTrack = Playlist.NextItem(CurrentlyPlayingTrack);
+            //Debug.WriteLine(" currently selected track: " + CurrentlySelectedTrack.FriendlyName);
 
             if (_audioPlayer != null)
             {
@@ -426,9 +441,6 @@ namespace NaudioPlayer.ViewModels
             _songsPlayedSinceLastInterlude++;
         }
 
-
-
-
         private void _audioPlayer_PlaybackResumed()
         {
             _playbackState = PlaybackState.Playing;
@@ -438,6 +450,27 @@ namespace NaudioPlayer.ViewModels
         {
             _playbackState = PlaybackState.Paused;
         }
+
+
+        // 固定時間檢查該載入的 Playlist 
+        private void ScheduleTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            CheckActiveSchedule();
+        }
+
+        private void CheckActiveSchedule()
+        {
+            string playlistName = GetPlaylistPathForCurrentTime();
+            if (playlistName != null)
+            {
+                string folderPath = "_playlist"; // Subfolder where the playlist files are located
+                string playlistPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folderPath, playlistName + ".playlist");
+
+                LoadPlaylist(playlistPath);
+                Debug.WriteLine("playlistPath: " + playlistPath);
+            }
+        }
+
 
         private void LoadCommands()
         {
@@ -602,7 +635,7 @@ namespace NaudioPlayer.ViewModels
 
         private void ToggleInterlude(object obj)
         {
-            Debug.WriteLine("ToggleInterlude: " + IsInterludeEnabled + " next Time: "+ _nextInterludeTime);
+            Debug.WriteLine("ToggleInterlude: " + IsInterludeEnabled);
             IsInterludeEnabled = !IsInterludeEnabled;
         }
 
@@ -745,33 +778,12 @@ namespace NaudioPlayer.ViewModels
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         Playlist = ToObservableCollection(newPlaylist);
+                        CurrentlySelectedTrack = Playlist[0];
                     });
-
+                    StartPlayback(CurrentlySelectedTrack);
                     Console.WriteLine($"Successfully loaded {filePath} playlist");
                     Console.WriteLine("Playlist count after loading: " + Playlist.Count);
                 }
-            }
-        }
-
-        // Schedule command
-        private void InitializeScheduleChecking()
-        {
-            // Create a timer that fires every minute
-            _scheduleCheckTimer = new DispatcherTimer();
-            _scheduleCheckTimer.Interval = TimeSpan.FromMinutes(1);
-            _scheduleCheckTimer.Tick += CheckActiveSchedule;
-            _scheduleCheckTimer.Start();
-        }
-
-        private void CheckActiveSchedule(object sender, EventArgs e)
-        {
-            string playlistPath = GetPlaylistPathForCurrentTime();
-
-            // Check if the playlist is different from the currently loaded playlist
-            if (playlistPath != null && playlistPath != _currentPlaylistPath)
-            {
-                LoadPlaylist(playlistPath);
-                _currentPlaylistPath = playlistPath; // Store the current playlist path
             }
         }
 
@@ -791,6 +803,7 @@ namespace NaudioPlayer.ViewModels
                     currentTime >= scheduleStartTime &&
                     currentTime <= scheduleEndTime)
                 {
+                    Debug.WriteLine("from getplaylistpath for current time: " + schedule.PlaylistPath);
                     return schedule.PlaylistPath;
                 }
             }
@@ -932,30 +945,6 @@ namespace NaudioPlayer.ViewModels
                 return true;
             }
             return false;
-        }
-
-        private void PausePlayback(object p)
-        {
-            if (_audioPlayer != null)
-            {
-                _audioPlayer.Pause();
-                _playbackState = PlaybackState.Paused;
-            }
-        }
-
-        private void PlayPause(object p)
-        {
-            if (_playbackState == PlaybackState.Playing)
-            {
-                PausePlayback(p);
-            }
-            else if (_playbackState == PlaybackState.Paused || _playbackState == PlaybackState.Stopped)
-            {
-                if (CurrentlySelectedTrack != null)
-                {
-                    StartPlayback(p);
-                }
-            }
         }
 
         private void PausePlayback(object p)

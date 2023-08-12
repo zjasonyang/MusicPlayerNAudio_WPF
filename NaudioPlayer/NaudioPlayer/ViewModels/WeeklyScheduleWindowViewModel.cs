@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows;
 
 public class WeeklyScheduleWindowViewModel : ObservableObject
 {
@@ -83,11 +84,11 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
 
     public ICommand SaveScheduleToJsonCommand { get; set; }
 
+    public ICommand CloseWindowCommand { get; private set; }
+
     public WeeklyScheduleWindowViewModel()
     {
         LoadAvailablePlaylists();
-
-        WeeklySchedules = LoadScheduleFromJson();
 
         WeeklySchedules = LoadScheduleFromJson();
 
@@ -108,6 +109,7 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
         AddScheduleCommand = new RelayCommand(AddSchedule, CanAddSchedule);
         SaveScheduleCommand = new RelayCommand(SaveSchedule, CanSaveSchedule);
         DeleteScheduleCommand = new RelayCommand(DeleteSchedule, CanDeleteSchedule);
+        CloseWindowCommand = new RelayCommand(CloseWindow, _ => true);
     }
     private void UpdateSelectedDays()
     {
@@ -167,6 +169,14 @@ public class WeeklyScheduleWindowViewModel : ObservableObject
     private bool CanSaveScheduleToJson()
     {
         return true;
+    }
+
+    private void CloseWindow(object obj)
+    {
+        if (obj is Window window)
+        {
+            window.Close();
+        }
     }
 
     private ObservableCollection<WeeklySchedule> LoadScheduleFromJson()

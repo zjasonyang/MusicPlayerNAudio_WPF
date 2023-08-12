@@ -4,115 +4,143 @@
         xmlns:uc="clr-namespace:NaudioPlayer.Views"
         xmlns:converters="clr-namespace:NaudioPlayer.Converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="Weekly Schedule" Height="450" Width="800"
-       
-        >
-    
+        Title="Weekly Schedule" Height="500" Width="600"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Background="Transparent"
+        MouseDown="Windows_MouseDown">
+
     <Window.Resources>
         <converters:DayOfWeekToStringConverter x:Key="DayOfWeekToStringConverter" />
     </Window.Resources>
+    <Border Background="lightgray" CornerRadius="20">
+        <!--<Border Background="#343540" CornerRadius="20">-->
+        <Grid>
+            <Grid.RowDefinitions>
+                <!--title-->
+                <RowDefinition Height="40"/>
+                <!--schedule list detail-->
+                <RowDefinition Height="240"/>
+                <!--setting area-->
+                <RowDefinition Height="200"/>
+            </Grid.RowDefinitions>
 
-    <Grid Margin="5">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="25"/>
-        </Grid.RowDefinitions>
+            <!--title-->
+            <Border Background="#030303" CornerRadius="20 20 0 0 " Grid.RowSpan="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="left" Margin="20 10 0 10">
+                    <Button Background="Transparent" BorderBrush="Transparent" 
+                            Command="{Binding CloseWindowCommand}" 
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                        <Ellipse Fill="#ff6258" Width="15" Height="15"/>
+                    </Button>
+                </StackPanel>
+            </Border>
 
-        <!--<StackPanel Grid.Row="0" Margin="10 5 0 0" HorizontalAlignment="left">
-            <Button Background="Transparent" BorderBrush="Transparent" Command="{Binding ExitApplicationCommand}">
-                <Ellipse Fill="#ff6258" Width="15" Height="15"/>
-            </Button>
-            <Button  Margin="7 0 0 0" Background="Transparent" BorderBrush="Transparent" Command="{Binding MinimizeWindowCommand}">
-                <Ellipse Fill="#ffbf2f" Width="15" Height="15"/>
-            </Button>
-        </StackPanel>-->
-        
-        <!-- Schedule display area -->
-        <ListView x:Name="scheduleListView" Grid.Row="0" ItemsSource="{Binding WeeklySchedules}" SelectedItem="{Binding SelectedWeeklySchedule}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="100"/>
-                    <GridViewColumn Header="Playlist" DisplayMemberBinding="{Binding PlaylistPath}" Width="100"/>
-                    <!--<GridViewColumn Header="Days" DisplayMemberBinding="{Binding DaysOfWeekString}" Width="200"/>-->
-                    <GridViewColumn Header="Days" DisplayMemberBinding="{Binding DaysOfWeekString}" Width="200"/>
-                    <GridViewColumn Header="Start Time" DisplayMemberBinding="{Binding StartTime, StringFormat={}{0:hh\\:mm}}" Width="100"/>
-                    <GridViewColumn Header="End Time" DisplayMemberBinding="{Binding EndTime, StringFormat={}{0:hh\\:mm}}" Width="100"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+            <!-- Schedule display area -->
+            <ListView x:Name="scheduleListView" 
+                      Grid.Row="1" 
+                      ItemsSource="{Binding WeeklySchedules}" 
+                      SelectedItem="{Binding SelectedWeeklySchedule}"
+                      Background="White">
+                <ListView.Resources>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Background" Value="LightGray"/>
+                    </Style>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="FontSize" Value="16"/>
+                    </Style>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="名稱" DisplayMemberBinding="{Binding Name}" Width="100"/>
+                        <GridViewColumn Header="播放清單" DisplayMemberBinding="{Binding PlaylistPath}" Width="100"/>
+                        <GridViewColumn Header="星期" DisplayMemberBinding="{Binding DaysOfWeekString}" Width="200"/>
+                        <GridViewColumn Header="開始時間" DisplayMemberBinding="{Binding StartTime, StringFormat={}{0:hh\\:mm}}" Width="100"/>
+                        <GridViewColumn Header="結束時間" DisplayMemberBinding="{Binding EndTime, StringFormat={}{0:hh\\:mm}}" Width="100"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
 
-        <!-- Edit area -->
+            <!--setting area-->
+            <Grid Grid.Row="2" Margin="10 10 10 0">
+                <Grid.RowDefinitions>
+                    <!--名稱 播放清單-->
+                    <RowDefinition Height="40"/>
+                    <!--起始時間-->
+                    <RowDefinition Height="40"/>
+                    <!--星期幾-->
+                    <RowDefinition Height="50"/>
+                    <!--按紐-->
+                    <RowDefinition Height="70"/>
+                    <!-- Additional row for buttons -->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="75"/>
+                    <ColumnDefinition Width="175"/>
+                    <ColumnDefinition Width="75"/>
+                    <ColumnDefinition Width="175"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 名稱 -->
+                <Label Content="名稱:" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+                <TextBox Height="30" Grid.Row="0" Grid.Column="2"  FontSize="16" Text="{Binding SelectedWeeklySchedule.Name, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!-- 播放清單 -->
+                <Label Content="播放清單:" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" FontSize="16"/>
+                <ComboBox Height="30" Grid.Row="0" Grid.Column="4" ItemsSource="{Binding AvailablePlaylists}" SelectedItem="{Binding SelectedWeeklySchedule.PlaylistPath, UpdateSourceTrigger=PropertyChanged}" />
+
+                <GroupBox Header="星期" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Margin="0,0,0,0" FontSize="12" Height="50">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <CheckBox Content="一" IsChecked="{Binding SelectedWeeklySchedule.MondayIsSelected, Mode=TwoWay}" Margin="10,0,5,0" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="二" IsChecked="{Binding SelectedWeeklySchedule.TuesdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="三" IsChecked="{Binding SelectedWeeklySchedule.WednesdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="四" IsChecked="{Binding SelectedWeeklySchedule.ThursdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="五" IsChecked="{Binding SelectedWeeklySchedule.FridayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="六" IsChecked="{Binding SelectedWeeklySchedule.SaturdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="日" IsChecked="{Binding SelectedWeeklySchedule.SundayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- 開始時間 -->
+                <Label Content="開始時間:" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" FontSize="16"/>
+                <xctk:TimePicker Height="30" FontSize="16" Grid.Row="1" Grid.Column="2" Format="Custom" FormatString="HH:mm" Value="{Binding SelectedWeeklySchedule.StartTime, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+
+                <!-- 結束時間 -->
+                <Label Content="結束時間:" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" FontSize="16"/>
+                <xctk:TimePicker Height="30" FontSize="16" Grid.Row="1" Grid.Column="4" Format="Custom" FormatString="HH:mm" Value="{Binding SelectedWeeklySchedule.EndTime, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+
+                
+
+                <!-- 按鈕 -->
+                <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,0,0">
+                    <Button Content="新增" Width="70" Height="40" Command="{Binding AddScheduleCommand}" Margin="0,0,5,0"/>
+                    <Button Content="儲存" Width="70" Height="40" Command="{Binding SaveScheduleCommand}" Margin="0,0,5,0"/>
+                    <Button Content="刪除" Width="70" Height="40" Command="{Binding DeleteScheduleCommand}"/>
+                </StackPanel>
+
+                <!-- Popup -->
+                <Popup x:Name="SaveStatusPopup"
+                       IsOpen="{Binding IsPopupOpen}"
+                       Placement="Center"
+                       StaysOpen="False">
+                    <Border Background="LightGray"
+                            Padding="20">
+                        <TextBlock Text="{Binding SaveStatusMessage}" />
+                    </Border>
+                </Popup>
+                <!-- ... -->
+            </Grid>
 
 
-        <Grid Grid.Row="1" Margin="0 10 0 0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBox Grid.Column="0" Text="{Binding SelectedWeeklySchedule.Name, UpdateSourceTrigger=PropertyChanged}" />
-            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailablePlaylists}" SelectedItem="{Binding SelectedWeeklySchedule.PlaylistPath, UpdateSourceTrigger=PropertyChanged}" />
-
-            <xctk:TimePicker Grid.Column="3" 
-                     Format="Custom"
-                     FormatString="HH:mm"
-                     Value="{Binding SelectedWeeklySchedule.StartTime, UpdateSourceTrigger=PropertyChanged}"/>
-            <xctk:TimePicker Grid.Column="4" 
-                     Format="Custom"
-                     FormatString="HH:mm"
-                     Value="{Binding SelectedWeeklySchedule.EndTime, UpdateSourceTrigger=PropertyChanged}"/>
 
 
-            <!--<ComboBox Grid.Column="3" ItemsSource="{Binding AvailableTimes}" SelectedItem="{Binding SelectedWeeklySchedule.StartTime, UpdateSourceTrigger=PropertyChanged}" />
-            <ComboBox Grid.Column="4" ItemsSource="{Binding AvailableTimes}" SelectedItem="{Binding SelectedWeeklySchedule.EndTime, UpdateSourceTrigger=PropertyChanged}" />-->
 
-            <StackPanel Grid.Column="5" Orientation="Horizontal" Margin="10,0,0,0">
-                <Button Content="Add" Command="{Binding AddScheduleCommand}" Margin="0,0,5,0"/>
-                <Button Content="Save" Command="{Binding SaveScheduleCommand}" Margin="0,0,5,0"/>
-                <Button Content="Delete" Command="{Binding DeleteScheduleCommand}"/>
-            </StackPanel>
-            <Popup x:Name="SaveStatusPopup"
-                   IsOpen="{Binding IsPopupOpen}"
-                   Placement="Center"
-                   StaysOpen="False">
-                <Border Background="LightGray"
-                        Padding="20">
-                    <TextBlock Text="{Binding SaveStatusMessage}" />
-                </Border>
-            </Popup>
         </Grid>
-        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0,10,0,0">
-            <CheckBox Content="Monday" IsChecked="{Binding SelectedWeeklySchedule.MondayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-            <CheckBox Content="Tuesday" IsChecked="{Binding SelectedWeeklySchedule.TuesdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-            <CheckBox Content="Wednesday" IsChecked="{Binding SelectedWeeklySchedule.WednesdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-            <CheckBox Content="Thursday" IsChecked="{Binding SelectedWeeklySchedule.ThursdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-            <CheckBox Content="Friday" IsChecked="{Binding SelectedWeeklySchedule.FridayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-            <CheckBox Content="Saturday" IsChecked="{Binding SelectedWeeklySchedule.SaturdayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-            <CheckBox Content="Sunday" IsChecked="{Binding SelectedWeeklySchedule.SundayIsSelected, Mode=TwoWay}" Margin="0,0,5,0" />
-        </StackPanel>
-
-        <!--<Grid Grid.Row="2" Margin="0 10 0 0">
-            <ItemsControl Grid.Column="2" ItemsSource="{Binding SelectedDays}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <CheckBox Content="{Binding DayName}"
-                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                      Margin="0,0,5,0" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>-->
-    </Grid>
-
+    </Border>
 </Window>
 
