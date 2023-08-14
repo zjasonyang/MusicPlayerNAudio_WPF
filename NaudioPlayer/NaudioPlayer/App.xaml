@@ -24,21 +24,32 @@
         <SolidColorBrush x:Key="color4" Color="#231651"/>
         <SolidColorBrush x:Key="color5" Color="#512500"/>
         <SolidColorBrush x:Key="color6" Color="#b4c5e4"/>
-
-        <!--left side control bar--> 
-        <!--<Style x:Key="controlButtton" TargetType="Button">
-            <Setter Property="Width" Value="10"/>
+        
+        <!--interlude toggle switch-->
+        <Style x:Key="ToggleSwitchStyle" TargetType="ToggleButton">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="4"/>
-                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid Background="Transparent">
+                            <Rectangle x:Name="Background" Fill="Gray" RadiusX="10" RadiusY="10" Height="16" VerticalAlignment="Center"/>
+                            <Ellipse x:Name="Thumb" Fill="White" Width="16" Height="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Background" Property="Fill" Value="#2374AB"/>
+                                <Setter TargetName="Thumb" Property="Margin" Value="32 2 2 2"/>
+                                <!-- Adjust this value -->
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="Background" Property="Fill" Value="Gray"/>
+                                <Setter TargetName="Thumb" Property="Margin" Value="2 2 2 2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>-->
-        
+        </Style>
+
         <!--left side menu (main menu)-->
         <Style x:Key="menuTitle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#2374ab"/>

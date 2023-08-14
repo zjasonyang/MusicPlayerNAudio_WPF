@@ -235,11 +235,12 @@ namespace NaudioPlayer.ViewModels
         {
             string selectedTrack = SelectedTrack;
 
-            if (selectedTrack != null && _interludeFilePaths.Contains(selectedTrack))
+            if (selectedTrack != null && _interludeFileNames.Contains(selectedTrack))
             {
-                int index = _interludeFilePaths.IndexOf(selectedTrack);
-                _interludeFilePaths.Remove(selectedTrack);
-                _interludeFileNames.RemoveAt(index); // remove the corresponding filename
+                int index = _interludeFileNames.IndexOf(selectedTrack);
+                _interludeFileNames.RemoveAt(index);
+                //_interludeFilePaths.Remove(selectedTrack);
+                //_interludeFileNames.RemoveAt(index); // remove the corresponding filename
                 OnPropertyChanged(nameof(InterludeFilePaths));
                 OnPropertyChanged(nameof(InterludeFileNames)); // Don't forget to notify changes
             }

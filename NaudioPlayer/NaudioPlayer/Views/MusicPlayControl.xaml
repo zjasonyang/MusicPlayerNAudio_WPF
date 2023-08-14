@@ -71,19 +71,8 @@
                     <Button Width="30" Height="30" Margin="5" Command="{Binding ShuffleCommand}" Style="{StaticResource playerButton}" >
                         <Icon:PackIconMaterial Kind="Shuffle"/>
                     </Button>
-                    <Button Width="30" Height="30" Margin="5" Command="{Binding ToggleInterludeCommand}"  >
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="White"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsInterludeEnabled}" Value="true">
-                                        <Setter Property="Background" Value="#363435"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Icon:PackIconMaterial Kind="MusicNotePlus" />
-                    </Button>
+                    <ToggleButton Style="{StaticResource ToggleSwitchStyle}" Width="50" Height="20" IsChecked="{Binding IsInterludeEnabled, Mode=TwoWay}" />
+
                 </StackPanel>
 
                 <Grid HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 20 30 10">

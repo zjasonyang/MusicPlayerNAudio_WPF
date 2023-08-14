@@ -48,16 +48,19 @@
                           Width="120"
                           Height="30"
                           FontWeight="Bold"
+                          FontSize="14"
                           Style="{StaticResource Services_MenuItem_With_Dropdown}">
                     <MenuItem Header="加入插播檔案"
                               Width="120"
                               Height="30"
+                              FontSize="14"
                               FontWeight="Bold"
                               Style="{StaticResource Services_Sub_MenuItem}"
                               Command="{Binding AddTrackCommand}"/>
                     <MenuItem Header="移除插播檔案"
                               Width="120"
                               Height="30"
+                              FontSize="14"
                               FontWeight="Bold"
                               Style="{StaticResource Services_Sub_MenuItem}"
                               Command="{Binding RemoveTrackCommand}"/>
@@ -104,6 +107,7 @@
                    HorizontalContentAlignment="Center"
                    VerticalContentAlignment="Center"
                    Height="30"
+                   FontSize="14"
                    Grid.Column="1"/>
             <TextBox Text="{Binding InterludeIntervalMinutes, UpdateSourceTrigger=PropertyChanged}" 
                      HorizontalContentAlignment="Center"
@@ -114,6 +118,7 @@
                     Width="100" 
                     Background="#030303"
                     Foreground="White"
+                    FontSize="14"
                     Grid.Column="3"/>
             <Label Content="{Binding ProgressValue}"
                    ContentStringFormat="{}{0} (秒鐘)"
@@ -122,6 +127,7 @@
                    HorizontalContentAlignment="Center"
                    VerticalContentAlignment="Center"
                    Height="30"
+                   FontSize="14"
                    Grid.Column="4"/>    
             
             
@@ -148,6 +154,7 @@
                    HorizontalContentAlignment="Center"
                    VerticalContentAlignment="Center"
                    Height="30"
+                   FontSize="14"
                    Grid.Column="1"/>
             <TextBox Text="{Binding InterludeAfterXSongs, UpdateSourceTrigger=PropertyChanged}" 
                      HorizontalContentAlignment="Center"
