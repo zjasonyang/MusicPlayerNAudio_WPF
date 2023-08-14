@@ -122,20 +122,7 @@ namespace NaudioPlayer.ViewModels
 
 
         public ObservableCollection<TimeSpan> InterludeTimes { get; set; }
-        //private List<TimeSpan> _interludeTimes;
-        //public List<TimeSpan> InterludeTimes
-        //{
-        //    get { return _interludeTimes; }
-        //    set
-        //    {
-        //        if (_interludeTimes != value)
-        //        {
-        //            _interludeTimes = value;
-        //            OnPropertyChanged();
-        //        }
-        //    }
-        //}
-
+       
         private DateTime? _selectedTime;
         public DateTime? SelectedTime
         {
@@ -302,8 +289,11 @@ namespace NaudioPlayer.ViewModels
             SettingsApplied?.Invoke();
 
             // also fire startTimer command
-
-            _interludeTimer.Start();
+            if (_isInterludeTimeIntervalEnabled)
+            {
+                _interludeTimer.Start();
+            }
+            
             // If you're using a Window to host your ViewModel, you can use this line to close the Window.
             // If you're using a different host, you may need to use a different method to close it.
             if (obj is Window window)

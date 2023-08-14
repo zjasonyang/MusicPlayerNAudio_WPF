@@ -379,7 +379,7 @@ namespace NaudioPlayer.ViewModels
                     _isPlayingInterlude = false; // Reset here after an interlude finishes playing
                     PlayNextSong();
                 }
-                else if (IsInterludeEnabled && _songsPlayedSinceLastInterlude >= _interludeSettings.InterludeAfterXSongs)
+                else if (IsInterludeEnabled && _songsPlayedSinceLastInterlude >= _interludeSettings.InterludeAfterXSongs && _interludeTracks.Count > 0)
                 {
                     PlayInterlude();
                 }
@@ -626,11 +626,11 @@ namespace NaudioPlayer.ViewModels
             Debug.WriteLine(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this));
             _songsPlayedSinceLastInterlude = -1;
 
-            var nextTime = _interludeTimes.OrderBy(t => t).FirstOrDefault(t => DateTime.Now.TimeOfDay < t);
+            //var nextTime = _interludeTimes.OrderBy(t => t).FirstOrDefault(t => DateTime.Now.TimeOfDay < t);
 
-            _nextInterludeTime = nextTime is TimeSpan validTime
-                ? DateTime.Today + validTime
-                : (DateTime?)null;
+            //_nextInterludeTime = nextTime is TimeSpan validTime
+            //    ? DateTime.Today + validTime
+            //    : (DateTime?)null;
         }
 
         private void ToggleInterlude(object obj)

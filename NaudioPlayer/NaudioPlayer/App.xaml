@@ -121,12 +121,6 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <!--<Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2374ab" />
-                    <Setter Property="Foreground" Value="White" />
-                </Trigger>
-            </Style.Triggers>-->
         </Style>
 
         
@@ -245,44 +239,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-
-
-
-        <!--<Style TargetType="Slider" x:Key="MusicPlaySliderStyle">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Slider">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="5" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Rectangle Fill="Transparent" Grid.Row="1" />
-                            <Track Grid.Row="1">
-                                <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="Slider.DecreaseLarge" Background="White"/>
-                                </Track.DecreaseRepeatButton>
-                                <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="Slider.IncreaseLarge" Background="#535353"/>
-                                </Track.IncreaseRepeatButton>
-                                <Track.Thumb>
-                                    <Thumb Width="8" Height="8" Margin="0,-2">
-                                        <Thumb.Template>
-                                            <ControlTemplate TargetType="Thumb">
-                                                <Ellipse Fill="White" />
-                                            </ControlTemplate>
-                                        </Thumb.Template>
-                                    </Thumb>
-                                </Track.Thumb>
-                            </Track>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>-->
-
 
         <!--volume slider-->
         <Style TargetType="Slider" x:Key="VolumeSliderStyle">
